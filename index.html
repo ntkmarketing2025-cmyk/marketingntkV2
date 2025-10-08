@@ -108,6 +108,96 @@
                 margin-top: 4px;
             }
         }
+        
+        /* Calendar Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(100px, 1fr)); /* 7 days, min width for content */
+            gap: 1px;
+            background-color: #d1d5db; /* Light gray lines */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .calendar-header-cell {
+            background-color: #3b82f6; /* Blue header */
+            color: white;
+            font-weight: 600;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+        .calendar-day-cell {
+            background-color: #ffffff;
+            padding: 8px 4px;
+            min-height: 80px;
+            position: relative;
+            text-align: left;
+            font-size: 0.75rem;
+            line-height: 1.2;
+            overflow: hidden;
+            transition: background-color 0.15s;
+        }
+        .calendar-day-cell.inactive {
+            background-color: #f3f4f6;
+            color: #9ca3af;
+        }
+        .calendar-day-cell:hover:not(.inactive) {
+            background-color: #e5f1ff; /* Light blue on hover */
+        }
+        .day-number {
+            font-weight: 700;
+            color: #1f2937;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            font-size: 1rem;
+        }
+        .calendar-content {
+            margin-top: 20px;
+            padding-left: 4px;
+        }
+        .shop-tag {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 500;
+            margin-top: 2px;
+            padding: 1px 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tag-blue { background-color: #bfdbfe; color: #1e40af; }
+        .tag-yellow { background-color: #fde68a; color: #92400e; }
+        .tag-red { background-color: #fecaca; color: #991b1b; }
+        .tag-purple { background-color: #e9d5ff; color: #581c87; }
+
+        /* Mobile specific calendar adjustments */
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: repeat(1, 1fr); /* Stack days on small mobile */
+            }
+            .calendar-header {
+                display: none; /* Hide header on small mobile when stacked */
+            }
+            .calendar-day-cell {
+                min-height: auto;
+                padding-top: 30px;
+            }
+            .day-number {
+                top: 8px;
+                left: 12px;
+            }
+            .calendar-content {
+                margin-top: 0;
+            }
+        }
+        @media (min-width: 640px) and (max-width: 1024px) {
+             .calendar-grid {
+                grid-template-columns: repeat(7, minmax(120px, 1fr));
+                overflow-x: auto;
+             }
+        }
     </style>
 </head>
 <body>
@@ -160,6 +250,21 @@
         </div>
     </section>
 
+    <!-- NEW SECTION: Content Calendar -->
+    <section class="mb-10">
+        <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            ปฏิทินการโพสต์ (Content Calendar) - เดือนตุลาคม 2568 (คลิกที่วันเพื่อดูรายละเอียด)
+        </h3>
+        <!-- Calendar will be rendered here -->
+        <div id="content-calendar-container" class="modern-container overflow-x-auto p-0">
+            <!-- Content will be rendered by renderContentCalendar() -->
+        </div>
+    </section>
+    <!-- END NEW SECTION: Content Calendar -->
+
     <!-- Performance Summary -->
     <section class="mb-10">
         <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -175,10 +280,43 @@
 
 </main>
 
+<!-- Modal Structure (Added for displaying calendar day details) -->
+<!-- Fixed inset-0 for full screen, z-[100] for high layer, hidden by default -->
+<div id="calendar-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/30 backdrop-blur-sm" onclick="closeModal()">
+    <div class="bg-white modern-container w-full max-w-lg md:max-w-xl max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+            <h3 id="modal-title" class="text-xl font-bold text-gray-800"></h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition duration-150 p-1 rounded-full hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="modal-content" class="pt-4 space-y-4">
+            <!-- Content will be inserted here -->
+        </div>
+    </div>
+</div>
+<!-- End Modal Structure -->
+
+
 <script type="module">
     // ตั้งค่าตัวแปร Global
     let currentFilter = 'All';
-    let currentDate = new Date();
+    // ตั้งวันที่เริ่มต้นเป็นวันที่ 8 ตุลาคม 2568 (ตามข้อมูลในตารางงาน)
+    let currentDate = new Date(2025, 9, 8); // Month is 0-indexed, so 9 is October 
+
+    // Function: Parses the details string into HTML list items
+    function parseDetails(detailsString) {
+        if (!detailsString) return '';
+        // Split by the custom delimiter ' | '
+        const items = detailsString.split(' | '); 
+        return `
+            <ul class="list-disc ml-5 space-y-1 text-xs md:text-sm text-gray-600 mt-1">
+                ${items.map(item => `<li>${item.trim()}</li>`).join('')}
+            </ul>
+        `;
+    }
 
     // ตัวอย่างข้อมูลตารางงาน (Daily Task Execution)
     // ข้อมูลนี้ใช้สำหรับแสดงผลงานประจำวันและรายงานผลการดำเนินงาน
@@ -438,6 +576,7 @@
     ];
 
     // --- UPDATED DATA STRUCTURE: High-Level Plan (Monthly/Weekly Overview) ---
+    // เพิ่ม 'content_details' ในแต่ละ task เพื่อให้สามารถแสดงรายละเอียดแบบ Bullet Points ได้
     const highLevelPlan = {
         "month": "ตุลาคม 2568",
         "team": "ฝ่ายกราฟิกและตัดต่อวิดีโอ",
@@ -459,59 +598,164 @@
                 "week": 1,
                 "date_range": "8–12 ตุลาคม",
                 "tasks": [
-                    { "day": "พุธ 8 ต.ค.", "task": "ถ่ายวันแรก", "shop": "นฏกรเทเลคอม", "details": "ถ่ายโปร 10.10 / ทีมงานบริการ / วิดีโอโปรโมชัน" },
-                    { "day": "พฤหัส 9 ต.ค.", "task": "ถ่ายเช้า / ตัดต่อบ่าย", "shop": "อิ่มสุข", "details": "ถ่ายเมนูแกงเช้า / บรรยากาศร้าน / ตัดต่อคลิปเที่ยง" },
-                    { "day": "ศุกร์ 10 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "details": "ถ่ายช่วงเริ่มตั้งเตา / ไฟย่าง / Meme 'สายหมูตัวจริง'" },
-                    { "day": "เสาร์ 11 ต.ค.", "task": "วันตัดต่อรวม", "shop": "ทุกแบรนด์", "details": "ตัดต่อคลิปทั้งหมด / ออกแบบกราฟิก 3 ร้าน" },
-                    { "day": "อาทิตย์ 12 ต.ค.", "task": "หยุด", "shop": "-", "details": "-" }
+                    { 
+                        "day": "พุธ 8 ต.ค.", 
+                        "task": "ถ่ายวันแรก", 
+                        "shop": "นฏกรเทเลคอม", 
+                        "content_details": "ถ่ายโปร 10.10 สำหรับแบนเนอร์ | ถ่ายทีมงานบริการ (วิดีโอสั้น) | ถ่ายภาพสินค้าหลักที่ร่วมโปร" 
+                    },
+                    { 
+                        "day": "พฤหัส 9 ต.ค.", 
+                        "task": "ถ่ายเช้า / ตัดต่อบ่าย", 
+                        "shop": "อิ่มสุข", 
+                        "content_details": "ถ่ายเมนูข้าวแกงเช้า (มุม Top View) | ถ่ายบรรยากาศร้านช่วงลูกค้าเข้า | ตัดต่อคลิปเที่ยง (30 วิ)" 
+                    },
+                    { 
+                        "day": "ศุกร์ 10 ต.ค.", 
+                        "task": "ถ่ายเย็น", 
+                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
+                        "content_details": "ถ่ายช่วงเริ่มตั้งเตา (ควัน) | ถ่ายไฟย่างฉ่ำๆ (Slow Motion) | ถ่าย Meme สั้น 'สายหมูตัวจริง' (พนักงาน)" 
+                    },
+                    { 
+                        "day": "เสาร์ 11 ต.ค.", 
+                        "task": "วันตัดต่อรวม", 
+                        "shop": "ทุกแบรนด์", 
+                        "content_details": "ตัดต่อคลิปทั้งหมด (รวม 5 คลิป) | ออกแบบกราฟิกแบนเนอร์ 3 ร้าน (แบนเนอร์โปรวันหยุด)" 
+                    },
+                    { "day": "อาทิตย์ 12 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" }
                 ]
             },
             {
                 "week": 2,
                 "date_range": "13–19 ตุลาคม",
                 "tasks": [
-                    { "day": "จันทร์ 13 ต.ค.", "task": "ถ่ายบ่าย", "shop": "นฏกรเทเลคอม", "details": "ถ่ายคลิป Tips มือถือ / ภาพสินค้าใหม่" },
-                    { "day": "อังคาร 14 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "details": "ถ่ายครอบครัว / แสงเย็น / ไฟย่าง" },
-                    { "day": "พุธ 15 ต.ค.", "task": "ถ่ายสาย", "shop": "อิ่มสุข", "details": "รีวิวลูกค้า / บรรยากาศเที่ยง" },
-                    { "day": "พฤหัส 16 ต.ค.", "task": "ตัดต่อ + ออกแบบ", "shop": "ทุกแบรนด์", "details": "รวมคลิป / ทำโพสต์คิว 3 ร้าน" },
-                    { "day": "ศุกร์ 17 ต.ค.", "task": "ถ่ายสั้น / ตัดต่อเสริม", "shop": "นฏกรเทเลคอม", "details": "ถ่ายศูนย์ซ่อม / ก่อน-หลังซ่อม" },
-                    { "day": "เสาร์ 18 ต.ค.", "task": "ถ่ายเสริม / บรรยากาศรวม", "shop": "อิ่มสุข + ลูกเจี๊ยบ", "details": "ภาพรวมร้าน / ลูกค้าแน่น" },
-                    { "day": "อาทิตย์ 19 ต.ค.", "task": "หยุด", "shop": "-", "details": "-" }
+                    { 
+                        "day": "จันทร์ 13 ต.ค.", 
+                        "task": "ถ่ายบ่าย", 
+                        "shop": "นฏกรเทเลคอม", 
+                        "content_details": "ถ่ายคลิป Tips มือถือ '3 เคล็ดลับเพิ่มแบต' | ภาพสินค้าใหม่ (Focus สินค้า 5 ชิ้น)" 
+                    },
+                    { 
+                        "day": "อังคาร 14 ต.ค.", 
+                        "task": "ถ่ายเย็น", 
+                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
+                        "content_details": "ถ่ายภาพครอบครัวทานหมู (เน้นความสุข) | ถ่ายแสงเย็น (ภาพนิ่ง) | ถ่ายไฟย่าง (วิดีโอ 15 วิ)" 
+                    },
+                    { 
+                        "day": "พุธ 15 ต.ค.", 
+                        "task": "ถ่ายสาย", 
+                        "shop": "อิ่มสุข", 
+                        "content_details": "ถ่ายรีวิวลูกค้า (สัมภาษณ์สั้น 1 ท่าน) | ถ่ายบรรยากาศเที่ยง (มุมกว้าง) | ถ่ายวิดีโอสั้น 'ตักไม่อั้น'" 
+                    },
+                    { 
+                        "day": "พฤหัส 16 ต.ค.", 
+                        "task": "ตัดต่อ + ออกแบบ", 
+                        "shop": "ทุกแบรนด์", 
+                        "content_details": "รวมคลิป (4 ชิ้น) | ออกแบบโพสต์คิว 3 ร้าน (รวม 6 ชิ้น)" 
+                    },
+                    { 
+                        "day": "ศุกร์ 17 ต.ค.", 
+                        "task": "ถ่ายสั้น / ตัดต่อเสริม", 
+                        "shop": "นฏกรเทเลคอม", 
+                        "content_details": "ถ่ายสั้นศูนย์ซ่อม (ช่างกำลังซ่อม) | คลิป Before-After ซ่อมจอแตก (เน้นความรวดเร็ว)" 
+                    },
+                    { 
+                        "day": "เสาร์ 18 ต.ค.", 
+                        "task": "ถ่ายเสริม / บรรยากาศรวม", 
+                        "shop": "อิ่มสุข + ลูกเจี๊ยบ", 
+                        "content_details": "ภาพรวมร้าน/ป้ายร้าน (อิ่มสุข) | ภาพลูกค้าแน่น (ลูกเจี๊ยบ) | ถ่ายภาพนิ่งสำรอง (2 ร้าน)" 
+                    },
+                    { "day": "อาทิตย์ 19 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" }
                 ]
             },
             {
                 "week": 3,
                 "date_range": "20–26 ตุลาคม",
                 "tasks": [
-                    { "day": "จันทร์ 20 ต.ค.", "task": "ถ่ายเช้า", "shop": "นฏกรเทเลคอม", "details": "โปรสิ้นเดือน / รีวิวลูกค้า" },
-                    { "day": "อังคาร 21 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "details": "คลิป 'หมูกระทะใครสุกก่อนแพ้' / แสงเย็น" },
-                    { "day": "พุธ 22 ต.ค.", "task": "ถ่ายสาย", "shop": "อิ่มสุข", "details": "เมนูพิเศษรายสัปดาห์" },
-                    { "day": "พฤหัส 23 ต.ค.", "task": "ตัดต่อรวม", "shop": "ทุกแบรนด์", "details": "รวมคลิปทั้งหมด / เตรียมโพสต์สุดสัปดาห์" },
-                    { "day": "ศุกร์ 24 ต.ค.", "task": "ถ่ายเสริม / ภาพโปร", "shop": "นฏกรเทเลคอม", "details": "ถ่ายโปรแถมของ / ภาพแบนเนอร์" },
-                    { "day": "เสาร์ 25 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "details": "คนแน่นร้าน / Meme พนักงาน" },
-                    { "day": "อาทิตย์ 26 ต.ค.", "task": "หยุด", "shop": "-", "details": "-" }
+                    { 
+                        "day": "จันทร์ 20 ต.ค.", 
+                        "task": "ถ่ายเช้า", 
+                        "shop": "นฏกรเทเลคอม", 
+                        "content_details": "โปรสิ้นเดือน (แบนเนอร์) | รีวิวลูกค้าใหม่ (ภาพนิ่ง 3 ท่าน) | ถ่ายวิดีโอสั้นพนักงานแนะนำโปร" 
+                    },
+                    { 
+                        "day": "อังคาร 21 ต.ค.", 
+                        "task": "ถ่ายเย็น", 
+                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
+                        "content_details": "คลิป 'หมูกระทะใครสุกก่อนแพ้' (เน้นฮา) | ถ่ายแสงเย็น (ภาพรวมร้าน)" 
+                    },
+                    { 
+                        "day": "พุธ 22 ต.ค.", 
+                        "task": "ถ่ายสาย", 
+                        "shop": "อิ่มสุข", 
+                        "content_details": "ถ่ายเมนูพิเศษรายสัปดาห์ (VDO + ภาพสวย 3 มุม) | ถ่าย VDO สั้น 'เมนูเด็ดต้องลอง'" 
+                    },
+                    { 
+                        "day": "พฤหัส 23 ต.ค.", 
+                        "task": "ตัดต่อรวม", 
+                        "shop": "ทุกแบรนด์", 
+                        "content_details": "รวมคลิปทั้งหมด (6 ชิ้น) | เตรียมโพสต์สุดสัปดาห์ (3 ร้าน) | กราฟิกใหม่ 2 ชิ้น" 
+                    },
+                    { 
+                        "day": "ศุกร์ 24 ต.ค.", 
+                        "task": "ถ่ายเสริม / ภาพโปร", 
+                        "shop": "นฏกรเทเลคอม", 
+                        "content_details": "ถ่ายภาพโปรแถมของ (แกะกล่อง) | ภาพแบนเนอร์โปรโมชั่น 1 ชิ้น" 
+                    },
+                    { 
+                        "day": "เสาร์ 25 ต.ค.", 
+                        "task": "ถ่ายเย็น", 
+                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
+                        "content_details": "ถ่ายคนแน่นร้าน (วิดีโอ Hyperlapse) | ถ่าย Meme พนักงาน 'วันเสาร์ต้องหมูกระทะ'" 
+                    },
+                    { "day": "อาทิตย์ 26 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" }
                 ]
             },
             {
                 "week": 4,
                 "date_range": "27–31 ตุลาคม",
                 "tasks": [
-                    { "day": "จันทร์ 27 ต.ค.", "task": "ถ่ายสาย", "shop": "อิ่มสุข", "details": "เมนูพิเศษปลายเดือน" },
-                    { "day": "อังคาร 28 ต.ค.", "task": "ถ่ายบ่าย", "shop": "นฏกรเทเลคอม", "details": "โปร Halloween 'มือถือไม่หลอก ราคาไม่แพง'" },
-                    { "day": "พุธ 29 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "details": "โปรสิ้นเดือน / คลิปตลกพนักงาน" },
-                    { "day": "พฤหัส 30 ต.ค.", "task": "ตัดต่อรวม", "shop": "ทุกแบรนด์", "details": "สรุปคลิปและกราฟิกทั้งเดือน" },
-                    { "day": "ศุกร์ 31 ต.ค.", "task": "รวม Footage + คลิปรีแคป", "shop": "ทุกแบรนด์", "details": "ทำคลิป 'Best Moments เดือนตุลา'" }
+                    { 
+                        "day": "จันทร์ 27 ต.ค.", 
+                        "task": "ถ่ายสาย", 
+                        "shop": "อิ่มสุข", 
+                        "content_details": "ถ่ายเมนูพิเศษปลายเดือน (เน้นเทศกาล) | ถ่ายบรรยากาศร้าน (สว่าง/สะอาด)" 
+                    },
+                    { 
+                        "day": "อังคาร 28 ต.ค.", 
+                        "task": "ถ่ายบ่าย", 
+                        "shop": "นฏกรเทเลคอม", 
+                        "content_details": "ถ่ายโปร Halloween 'มือถือไม่หลอก' (Concept สนุก) | ออกแบบกราฟิก Halloween" 
+                    },
+                    { 
+                        "day": "พุธ 29 ต.ค.", 
+                        "task": "ถ่ายเย็น", 
+                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
+                        "content_details": "ถ่ายโปรสิ้นเดือน (ภาพโปรใหญ่) | คลิปตลกพนักงาน 'ก่อน/หลังกินหมูกระทะ'" 
+                    },
+                    { 
+                        "day": "พฤหัส 30 ต.ค.", 
+                        "task": "ตัดต่อรวม", 
+                        "shop": "ทุกแบรนด์", 
+                        "content_details": "สรุปคลิปและกราฟิกทั้งเดือน | เตรียมคอนเทนต์สำรอง 5 ชิ้น สำหรับเดือน พ.ย." 
+                    },
+                    { 
+                        "day": "ศุกร์ 31 ต.ค.", 
+                        "task": "รวม Footage + คลิปรีแคป", 
+                        "shop": "ทุกแบรนด์", 
+                        "content_details": "รวม Footage ที่ดีที่สุด | ทำคลิป 'Best Moments เดือนตุลา' (ยาว 60-90 วิ)" 
+                    }
                 ]
             }
         ],
         "posting_rotation": [
-            { "day": "จันทร์", "main_shop": "นฏกรเทเลคอม", "content": "นฏกร: ภาพโปรสินค้า / รีวิวซ่อม (Main) | อิ่มสุข: ภาพตักแกง (Commitment Post) | ลูกเจี๊ยบ: Meme สั้น (Commitment Post)" },
-            { "day": "อังคาร", "main_shop": "ลูกเจี๊ยบ หมูกระทะ", "content": "ลูกเจี๊ยบ: Meme / Reel สนุก (Main) | นฏกร: Tips มือถือ (Commitment Post) | อิ่มสุข: ภาพลูกค้า (Commitment Post)" },
-            { "day": "พุธ", "main_shop": "อิ่มสุข", "content": "อิ่มสุข: ภาพเมนู / คลิปรีวิวลูกค้า (Main) | นฏกร: ภาพสินค้าใหม่ (Commitment Post) | ลูกเจี๊ยบ: ภาพบรรยากาศย่าง (Commitment Post)" },
-            { "day": "พฤหัส", "main_shop": "รวม 3 ร้าน", "content": "นฏกร: Story เบื้องหลังซ่อม (Post) | อิ่มสุข: Infographic เมนู/ราคา (Post) | ลูกเจี๊ยบ: Reel ตลกพนักงาน (Post)" },
-            { "day": "ศุกร์", "main_shop": "นฏกรเทเลคอม", "content": "นฏกร: โปรโมชั่น / แบนเนอร์ (Main) | อิ่มสุข: ภาพเมนูพิเศษ (Commitment Post) | ลูกเจี๊ยบ: ภาพคนแน่นร้าน (Commitment Post)" },
-            { "day": "เสาร์", "main_shop": "ลูกเจี๊ยบ + อิ่มสุข", "content": "ลูกเจี๊ยบ: บรรยากาศคนแน่น (Main) | อิ่มสุข: เสาร์สุขอิ่ม (Main) | นฏกร: ภาพรวมร้าน/พนักงาน (Support Post)" },
-            { "day": "อาทิตย์", "main_shop": "คอนเทนต์สำรอง", "content": "ทุกร้าน: ใช้คอนเทนต์สำรอง / รวมไฮไลต์สัปดาห์ (1 โพสต์ต่อร้าน) เพื่อรักษาวินัยการโพสต์" }
+            { "day": "จันทร์", "main_shop": "นฏกรเทเลคอม", "content": "นฏกร: ภาพโปร/รีวิวซ่อม (Main) | อิ่มสุข: ภาพตักแกง | ลูกเจี๊ยบ: Meme สั้น", "shop_tags": ["นฏกร: Main", "อิ่มสุข: Sub", "ลูกเจี๊ยบ: Sub"] },
+            { "day": "อังคาร", "main_shop": "ลูกเจี๊ยบ หมูกระทะ", "content": "ลูกเจี๊ยบ: Meme/Reel สนุก (Main) | นฏกร: Tips มือถือ | อิ่มสุข: ภาพลูกค้า", "shop_tags": ["ลูกเจี๊ยบ: Main", "นฏกร: Sub", "อิ่มสุข: Sub"] },
+            { "day": "พุธ", "main_shop": "อิ่มสุข", "content": "อิ่มสุข: ภาพเมนู/คลิปรีวิว (Main) | นฏกร: ภาพสินค้าใหม่ | ลูกเจี๊ยบ: ภาพบรรยากาศย่าง", "shop_tags": ["อิ่มสุข: Main", "นฏกร: Sub", "ลูกเจี๊ยบ: Sub"] },
+            { "day": "พฤหัส", "main_shop": "รวม 3 ร้าน", "content": "นฏกร: Story เบื้องหลังซ่อม | อิ่มสุข: Infographic | ลูกเจี๊ยบ: Reel ตลก", "shop_tags": ["นฏกร: Post", "อิ่มสุข: Post", "ลูกเจี๊ยบ: Post"] },
+            { "day": "ศุกร์", "main_shop": "นฏกรเทเลคอม", "content": "นฏกร: โปรโมชั่น/แบนเนอร์ (Main) | อิ่มสุข: ภาพเมนูพิเศษ | ลูกเจี๊ยบ: ภาพคนแน่นร้าน", "shop_tags": ["นฏกร: Main", "อิ่มสุข: Sub", "ลูกเจี๊ยบ: Sub"] },
+            { "day": "เสาร์", "main_shop": "ลูกเจี๊ยบ + อิ่มสุข", "content": "ลูกเจี๊ยบ: บรรยากาศคนแน่น (Main) | อิ่มสุข: เสาร์สุขอิ่ม (Main) | นฏกร: ภาพรวมร้าน", "shop_tags": ["ลูกเจี๊ยบ: Main", "อิ่มสุข: Main", "นฏกร: Sub"] },
+            { "day": "อาทิตย์", "main_shop": "คอนเทนต์สำรอง", "content": "ทุกร้าน: ใช้คอนเทนต์สำรอง / รวมไฮไลต์สัปดาห์", "shop_tags": ["ทุกร้าน: Backup"] }
         ]
     };
     // --- END UPDATED DATA STRUCTURE ---
@@ -605,7 +849,7 @@
             </div>
         `;
 
-        // 3. Weekly Schedule (Collapsible)
+        // 3. Weekly Schedule (Collapsible) - UPDATED TABLE STRUCTURE
         const weeklyScheduleHtml = `
             <div class="modern-container shadow-xl bg-purple-50 border-t-4 border-purple-600">
                 <h3 class="text-xl sm:text-2xl font-bold text-purple-800 mb-4 flex items-center">
@@ -628,19 +872,21 @@
                                     <table class="min-w-full divide-y divide-purple-200 text-sm">
                                         <thead>
                                             <tr class="bg-purple-100">
-                                                <th class="px-4 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">วัน</th>
-                                                <th class="px-4 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">ร้าน</th>
-                                                <th class="px-4 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">งานหลัก</th>
-                                                <th class="px-4 py-2 text-left font-semibold text-purple-800 min-w-[200px]">รายละเอียด</th>
+                                                <th class="px-3 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">วัน</th>
+                                                <th class="px-3 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">ร้าน</th>
+                                                <th class="px-3 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">งานหลัก</th>
+                                                <th class="px-3 py-2 text-left font-semibold text-purple-800 min-w-[300px]">คอนเทนต์/รายละเอียดงาน</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-purple-100">
                                             ${week.tasks.map(task => `
                                                 <tr class="hover:bg-purple-50">
-                                                    <td class="px-4 py-2 whitespace-nowrap font-medium">${task.day}</td>
-                                                    <td class="px-4 py-2 text-gray-700 whitespace-nowrap">${task.shop}</td>
-                                                    <td class="px-4 py-2 text-gray-700 whitespace-nowrap">${task.task}</td>
-                                                    <td class="px-4 py-2 text-sm text-gray-600">${task.details}</td>
+                                                    <td class="px-3 py-2 whitespace-nowrap font-medium">${task.day}</td>
+                                                    <td class="px-3 py-2 text-gray-700 whitespace-nowrap">${task.shop}</td>
+                                                    <td class="px-3 py-2 text-gray-700 whitespace-nowrap">${task.task}</td>
+                                                    <td class="px-3 py-2 text-sm text-gray-800">
+                                                        ${parseDetails(task.content_details)}
+                                                    </td>
                                                 </tr>
                                             `).join('')}
                                         </tbody>
@@ -655,6 +901,224 @@
 
         container.innerHTML = overviewHtml + rotationHtml + weeklyScheduleHtml;
     }
+
+    // NEW FUNCTION: Renders the Content Calendar
+    function renderContentCalendar() {
+        const container = document.getElementById('content-calendar-container');
+        const year = 2025;
+        const month = 9; // October (0-indexed)
+
+        // Find the number of days in the month
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        // Find the day of the week for the 1st of the month (0=Sunday, 1=Monday, ..., 6=Saturday)
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+        const dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์'];
+
+        let calendarHTML = `<div class="calendar-grid">`;
+
+        // Calendar Headers
+        dayNames.forEach(day => {
+            calendarHTML += `<div class="calendar-header-cell">${day}</div>`;
+        });
+
+        // Calculate leading blank days (offset for the first day of the month)
+        // Assuming Sunday start (firstDayOfMonth = 0 for Sunday)
+        let startingOffset = firstDayOfMonth; 
+        
+        // Add leading blank cells
+        for (let i = 0; i < startingOffset; i++) {
+            calendarHTML += `<div class="calendar-day-cell inactive"></div>`;
+        }
+
+        // --- Render Days and Content ---
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, etc.
+            const dayName = dayNames[dayOfWeek];
+            // Date string for passing to modal function: YYYY-MM-DD
+            const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // Find the posting rotation for this day
+            const rotationEntry = highLevelPlan.posting_rotation.find(item => item.day === dayName);
+
+            // Determine if it's a past, current, or future day
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            date.setHours(0, 0, 0, 0);
+            
+            const isToday = date.getTime() === today.getTime();
+            const isActiveDay = dayOfWeek !== 0; // Not Sunday
+
+            let dayClass = 'calendar-day-cell';
+            if (isToday) {
+                dayClass += ' ring-4 ring-indigo-300/50 shadow-lg';
+            }
+            if (!isActiveDay) {
+                dayClass += ' inactive';
+            }
+
+
+            let contentTags = '';
+            if (rotationEntry && rotationEntry.shop_tags) {
+                contentTags = rotationEntry.shop_tags.map(tag => {
+                    const [shop, type] = tag.split(': ');
+                    let tagClass = 'tag-purple';
+                    
+                    if (shop.includes('นฏกร')) tagClass = 'tag-blue';
+                    else if (shop.includes('อิ่มสุข')) tagClass = 'tag-yellow';
+                    else if (shop.includes('ลูกเจี๊ยบ')) tagClass = 'tag-red';
+                    
+                    // Add emphasis for Main/Commitment/Post tags
+                    let tagText = shop;
+                    if (type === 'Main') {
+                        tagText = `${shop} (Main)`;
+                        tagClass += ' font-bold';
+                    } else if (type === 'Sub') {
+                         tagText = `${shop} (Sub)`;
+                    } else if (type === 'Backup') {
+                         tagClass = 'tag-purple';
+                         tagText = 'สำรอง';
+                    }
+                    
+                    // If it's a day off, show 'หยุด'
+                    if (rotationEntry.main_shop === 'คอนเทนต์สำรอง' && dayOfWeek === 0) {
+                        return `<span class="shop-tag tag-purple bg-purple-200/50 text-red-700 font-bold">วันหยุด</span>`;
+                    }
+
+                    return `<span class="shop-tag ${tagClass}">${tagText}</span>`;
+                }).join('');
+            }
+            
+            if (rotationEntry && rotationEntry.main_shop === 'คอนเทนต์สำรอง' && dayOfWeek !== 0) {
+                contentTags = `<span class="shop-tag tag-purple bg-purple-200/50 text-purple-700 font-bold">สำรอง: สรุปไฮไลต์</span>`;
+            }
+
+            // ADD ONCLICK HANDLER HERE
+            calendarHTML += `
+                <div class="${dayClass} ${isActiveDay || rotationEntry.main_shop === 'คอนเทนต์สำรอง' ? 'cursor-pointer' : ''}" 
+                     onclick="openDayDetailsModal('${dateString}')">
+                    <div class="day-number">${day}</div>
+                    <div class="calendar-content">
+                        ${contentTags}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Add trailing blank cells (if needed to complete the last row)
+        const totalCells = startingOffset + daysInMonth;
+        const remainingCells = 7 - (totalCells % 7);
+        if (remainingCells !== 7) {
+            for (let i = 0; i < remainingCells; i++) {
+                calendarHTML += `<div class="calendar-day-cell inactive"></div>`;
+            }
+        }
+
+        calendarHTML += `</div>`;
+        container.innerHTML = calendarHTML;
+    }
+
+    // Global function to close the modal
+    window.closeModal = function() {
+        document.getElementById('calendar-modal').classList.add('hidden');
+        document.getElementById('calendar-modal').classList.remove('flex');
+    }
+
+    // Global function to open and populate the modal
+    window.openDayDetailsModal = function(dateString) {
+        const modal = document.getElementById('calendar-modal');
+        const titleElement = document.getElementById('modal-title');
+        const contentElement = document.getElementById('modal-content');
+
+        // 1. Parse Date and get Day Name
+        const [year, month, day] = dateString.split('-').map(Number);
+        // month is 1-indexed from the string, convert to 0-indexed for Date constructor
+        const dateObj = new Date(year, month - 1, day); 
+        const dateLocale = dateObj.toLocaleDateString('th-TH', { dateStyle: 'full' });
+        const dayOfWeek = dateObj.getDay(); // 0=Sunday, 1=Monday, etc.
+        const dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์'];
+        const dayName = dayNames[dayOfWeek];
+
+        // Format Title: Use only the date part of dateLocale
+        const datePart = dateLocale.substring(dateLocale.indexOf(' ') + 1); // e.g., "8 ตุลาคม พ.ศ. 2568"
+        titleElement.innerHTML = `📅 รายละเอียดงาน: ${dayName} ที่ ${dayPart}`;
+        contentElement.innerHTML = '<div class="text-center text-gray-500">กำลังโหลดข้อมูล...</div>'; 
+
+        // 2. Get Daily Tasks (Specific Tasks)
+        const dailySchedule = scheduleData.find(entry => entry.date === dateString);
+        let tasksHtml = '';
+        if (dailySchedule && dailySchedule.tasks.length > 0 && dailySchedule.tasks.some(t => t.title !== 'วันหยุด')) {
+            tasksHtml = `
+                <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        งานประจำวันที่ต้องทำ (Daily Schedule)
+                    </h4>
+                    <ul class="space-y-2 text-sm">
+                        ${dailySchedule.tasks.map(task => {
+                            const statusColor = task.status === 'completed' ? 'text-green-600' : 'text-yellow-600';
+                            const statusIcon = task.status === 'completed' ? '✅' : '⏳';
+                            return `
+                                <li class="p-2 border-b border-blue-100 last:border-b-0 flex justify-between items-center hover:bg-blue-100/50 rounded-md">
+                                    <div>
+                                        <span class="font-medium text-gray-800">${task.time}</span> - <span class="text-gray-700">${task.title}</span>
+                                    </div>
+                                    <span class="text-xs font-semibold whitespace-nowrap ${statusColor}">${task.shop} ${statusIcon}</span>
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>
+                </div>
+            `;
+        } else if (dailySchedule && dailySchedule.tasks.some(t => t.title === 'วันหยุด')) {
+             tasksHtml = `<div class="p-3 text-center text-red-600 bg-red-50 rounded-lg border border-red-200 font-bold">🎉 วันหยุดทำการ 🎉</div>`;
+        } else {
+            tasksHtml = `<div class="p-3 text-center text-gray-500 bg-gray-50 rounded-lg">วันนี้ไม่มีงานถ่ายทำหรือตัดต่อเฉพาะกิจ</div>`;
+        }
+        
+        // 3. Get Posting Rotation (Daily Content Plan)
+        const rotationEntry = highLevelPlan.posting_rotation.find(item => item.day === dayName);
+        let rotationHtml = '';
+        if (rotationEntry) {
+            rotationHtml = `
+                <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <h4 class="font-bold text-yellow-700 mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2v2m0-8V6a2 2 0 110-4 2 2 0 010 4z"></path></svg>
+                        แผนการโพสต์ประจำวัน (Rotation)
+                    </h4>
+                    <p class="text-sm mb-2"><strong>ร้านหลักที่เน้น:</strong> <span class="font-semibold text-yellow-800">${rotationEntry.main_shop}</span></p>
+                    <ul class="list-disc ml-5 text-sm space-y-1 text-gray-700">
+                        ${rotationEntry.content.split('|').map(c => `<li>${c.trim()}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // 4. Issues/Notes
+        let issuesHtml = '';
+        if (dailySchedule && dailySchedule.issues.length > 0) {
+             issuesHtml = `
+                <div class="p-3 bg-red-50 rounded-lg border border-red-200">
+                    <h4 class="font-bold text-red-700 mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        ประเด็นปัญหา (หากมี)
+                    </h4>
+                    <ul class="list-decimal ml-5 text-sm space-y-1 text-red-800">
+                        ${dailySchedule.issues.map(issue => `<li>${issue}</li>`).join('')}
+                    </ul>
+                </div>
+             `;
+        }
+
+
+        contentElement.innerHTML = tasksHtml + rotationHtml + issuesHtml;
+        
+        // 5. Display Modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
 
     // Function: Toggle Collapsible Content for Weekly Schedule
     window.toggleCollapsible = function(header) {
@@ -711,7 +1175,7 @@
             const buttonText = btn.innerText.trim();
             if (filter === 'All' && buttonText === 'ทั้งหมด') {
                 btn.classList.add('active');
-            } else if (filter !== 'All' && buttonText === filter) {
+            } else if (filter !== 'All' && buttonText.includes(filter.split(' ')[0])) { // Check for partial match like "นฏกร"
                 btn.classList.add('active');
             }
         });
@@ -739,8 +1203,9 @@
         titleElement.innerText = `งานวันนี้ (${todayEntry.day}):`;
 
         // Apply filter
+        const filterKeyword = currentFilter === 'All' ? '' : currentFilter.split(' ')[0]; // Use first word for shop name
         const filteredTasks = todayEntry.tasks.filter(task => 
-            currentFilter === 'All' || task.shop.includes(currentFilter) || task.shop === '-'
+            currentFilter === 'All' || task.shop.includes(filterKeyword) || task.shop === '-'
         );
 
         if (filteredTasks.length === 0) {
@@ -805,6 +1270,8 @@
         
         // Sort data descending by date to show newest first
         const sortedData = [...scheduleData].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        const filterKeyword = currentFilter === 'All' ? '' : currentFilter.split(' ')[0]; // Use first word for shop name
 
         sortedData.forEach(entry => {
             const entryDate = new Date(entry.date);
@@ -817,7 +1284,7 @@
                 
                 // Filter tasks based on selected shop
                 const tasksForPerformance = entry.tasks.filter(task => 
-                    currentFilter === 'All' || task.shop.includes(currentFilter)
+                    currentFilter === 'All' || task.shop.includes(filterKeyword)
                 );
                 
                 if (tasksForPerformance.length === 0) {
@@ -924,8 +1391,8 @@
         renderTodaySchedule(currentDate);
         renderPerformance();
 
-        // Log the filter to console for debugging
-        console.log("Current Shop Filter:", currentFilter); 
+        // 6. Render Content Calendar
+        renderContentCalendar();
     }
 </script>
 </body>
