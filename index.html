@@ -6,120 +6,68 @@
     <title>ตารางงานฝ่ายกราฟิกและตัดต่อวิดีโอ</title>
     <!-- โหลด Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Kanit Font for Thai language support -->
+    <!-- โหลดฟอนต์ Kanit เพื่อรองรับภาษาไทย -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* --- General Styling --- */
         body {
             font-family: 'Kanit', 'Sarabun', sans-serif;
-            transition: background-color 0.5s, color 0.5s;
-            min-height: 100vh;
-            /* เพิ่ม padding ด้านบนให้มากขึ้นบนมือถือ เพื่อไม่ให้ชน Header */
-            padding-top: 80px; 
-            color: #333;
-            background-color: #f8f8f8;
-        }
-        header {
-            transition: background-color 0.5s, box-shadow 0.5s;
-            background-color: #fff;
-        }
-        .modern-container {
-            transition: background-color 0.5s, box-shadow 0.5s;
-            background-color: #fff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border-radius: 12px;
-            padding: 24px;
-        }
-        @media (max-width: 640px) {
-            .modern-container {
-                padding: 16px; /* ลด padding บนมือถือ */
-            }
-        }
-        /* Custom scrollbar for better look */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #a0aec0;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .text-shadow {
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-        .filter-button.active {
-            background-color: #3b82f6;
-            color: white;
-            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.5);
-        }
-        .collapsible-header {
-            cursor: pointer;
-            padding: 12px 16px;
-            background-color: #f3f4f6;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-        .collapsible-header:hover {
-            background-color: #e5e7eb;
-        }
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-            background-color: #fff;
-            border-radius: 0 0 8px 8px;
-            border: 1px solid #e5e7eb;
-            border-top: none;
-        }
-        .collapsible-content.active {
-            max-height: 2000px; /* เพิ่ม max-height ให้รองรับ content มากขึ้น */
-            padding: 16px;
-        }
-        
-        /* Mobile-specific styles for daily task list */
-        .task-list-item-mobile {
-            display: grid;
-            grid-template-areas: 
-                "time shop status"
-                "title title title";
-            grid-template-columns: 1fr 2fr auto;
+            background-color: #f7fafc;
+            color: #1a202c;
+            padding-top: 90px; 
         }
         @media (min-width: 640px) {
-            .task-list-item-mobile {
-                display: flex; /* กลับไปใช้ flex บน desktop/tablet */
-            }
+            body { padding-top: 80px; }
         }
+
+        .modern-container {
+            background-color: #fff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        @media (min-width: 640px) { .modern-container { padding: 24px; } }
         
-        /* Mobile adjustment for header */
+        /* --- Scrollbar & Filters --- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background-color: #cbd5e0; border-radius: 10px; }
+        #shop-filter-container::-webkit-scrollbar { display: none; }
+        #shop-filter-container { -ms-overflow-style: none; scrollbar-width: none; }
+        .filter-button.active {
+            background-color: #4299e1;
+            color: white;
+            box-shadow: 0 2px 4px rgba(66, 153, 225, 0.4);
+        }
+
+        /* --- Mobile Optimizations --- */
+        .task-list-item-mobile {
+            display: grid;
+            grid-template-areas: "time shop status" "title title title";
+            grid-template-columns: auto 1fr auto;
+            gap: 4px 8px;
+            align-items: center;
+        }
+        @media (min-width: 640px) { .task-list-item-mobile { display: flex; } }
+        
         @media (max-width: 640px) {
-            header .flex {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            header .text-2xl {
-                font-size: 1.5rem;
-            }
-            header #current-time {
-                font-size: 0.875rem; /* text-sm */
-                margin-top: 4px;
-            }
+            header .max-w-5xl { flex-direction: column; align-items: flex-start; gap: 4px; }
+            header .text-2xl { font-size: 1.25rem; }
+            header #current-time { font-size: 0.875rem; }
         }
         
-        /* Calendar Styles */
+        /* --- Calendar Styling --- */
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(7, minmax(100px, 1fr)); /* 7 days, min width for content */
+            grid-template-columns: repeat(7, minmax(0, 1fr)); 
             gap: 1px;
-            background-color: #d1d5db; /* Light gray lines */
+            background-color: #e2e8f0; 
             border-radius: 8px;
             overflow: hidden;
         }
         .calendar-header-cell {
-            background-color: #3b82f6; /* Blue header */
+            background-color: #3182ce;
             color: white;
             font-weight: 600;
             padding: 8px 4px;
@@ -129,1271 +77,509 @@
         .calendar-day-cell {
             background-color: #ffffff;
             padding: 8px 4px;
-            min-height: 80px;
-            position: relative;
-            text-align: left;
-            font-size: 0.75rem;
-            line-height: 1.2;
-            overflow: hidden;
+            min-height: 120px; 
             transition: background-color 0.15s;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
         }
-        .calendar-day-cell.inactive {
-            background-color: #f3f4f6;
-            color: #9ca3af;
+        .calendar-day-cell.inactive { 
+            background-color: #f7fafc; 
+            color: #a0aec0; 
+            cursor: default;
         }
-        .calendar-day-cell:hover:not(.inactive) {
-            background-color: #e5f1ff; /* Light blue on hover */
+        .calendar-day-cell.is-sunday {
+            background-color: #f8fafc;
         }
+        .calendar-day-cell:hover:not(.inactive) { background-color: #ebf8ff; }
         .day-number {
             font-weight: 700;
-            color: #1f2937;
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            font-size: 1rem;
+            color: #2d3748;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
         }
-        .calendar-content {
-            margin-top: 20px;
-            padding-left: 4px;
-        }
-        .shop-tag {
+        .calendar-content { flex-grow: 1; }
+        .shop-tag, .task-tag {
             display: block;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 500;
-            margin-top: 2px;
-            padding: 1px 4px;
+            margin-top: 3px;
+            padding: 2px 4px;
             border-radius: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .tag-blue { background-color: #bfdbfe; color: #1e40af; }
-        .tag-yellow { background-color: #fde68a; color: #92400e; }
-        .tag-red { background-color: #fecaca; color: #991b1b; }
-        .tag-purple { background-color: #e9d5ff; color: #581c87; }
+        .calendar-day-cell.selected {
+            background-color: #3182ce !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .calendar-day-cell.selected .day-number {
+            color: white;
+            font-weight: bold;
+        }
 
-        /* Mobile specific calendar adjustments */
+        /* Tag Styles */
+        .tag-blue { background-color: #bee3f8; color: #2c5282; }
+        .tag-yellow { background-color: #faf089; color: #975a16; }
+        .tag-red { background-color: #fed7d7; color: #9b2c2c; }
+        .tag-purple { background-color: #e9d8fd; color: #553c9a; }
+        .task-tag { background-color: #c6f6d5; color: #22543d; border-left: 3px solid #48bb78; }
+
+        /* Calendar on Mobile */
         @media (max-width: 768px) {
             .calendar-grid {
-                grid-template-columns: repeat(1, 1fr); /* Stack days on small mobile */
+                grid-template-columns: repeat(7, minmax(140px, 1fr));
+                overflow-x: auto;
             }
-            .calendar-header {
-                display: none; /* Hide header on small mobile when stacked */
-            }
-            .calendar-day-cell {
-                min-height: auto;
-                padding-top: 30px;
-            }
-            .day-number {
-                top: 8px;
-                left: 12px;
-            }
-            .calendar-content {
-                margin-top: 0;
+            .calendar-header-cell {
+                position: sticky;
+                top: 0;
+                z-index: 10;
             }
         }
-        @media (min-width: 640px) and (max-width: 1024px) {
-             .calendar-grid {
-                grid-template-columns: repeat(7, minmax(120px, 1fr));
-                overflow-x: auto;
-             }
+        
+        /* Collapsible Section Styles */
+        .collapsible-header {
+            cursor: pointer;
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .collapsible-content.active {
+             /* Set a large max-height for expansion */
+            max-height: 2000px;
+        }
+        .collapsible-header svg {
+            transition: transform 0.3s ease-in-out;
+        }
+        .collapsible-header.active svg {
+            transform: rotate(180deg);
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-100">
 
-<header class="fixed top-0 left-0 right-0 z-50 shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+<header class="fixed top-0 left-0 right-0 z-50 shadow-md bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
         <div class="text-xl sm:text-2xl font-bold text-blue-600">
             📊 ตารางงานฝ่ายกราฟิกและวิดีโอ
         </div>
-        <div id="current-time" class="text-sm sm:text-xl font-medium text-gray-700 mt-1 sm:mt-0">
+        <div id="current-time" class="text-sm sm:text-xl font-medium text-gray-700">
             กำลังโหลด...
         </div>
     </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <!-- NEW SECTION: High-Level Plan Container -->
-    <div id="high-level-plan-container" class="mb-10">
-        <!-- Content will be rendered by renderHighLevelPlan() -->
-    </div>
-    <!-- END NEW SECTION -->
+    <!-- NEW: Business Overview Section -->
+    <section class="mb-10">
+        <div class="modern-container bg-gray-50 border-t-4 border-gray-400">
+            <div class="collapsible-header flex justify-between items-center text-gray-800 font-semibold text-lg" onclick="toggleCollapsible(this)">
+                <span>📝 สรุปเนื้อหาธุรกิจ (Business Overview)</span>
+                <svg class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            <div class="collapsible-content">
+                <div class="pt-4 text-gray-700 space-y-6 text-sm sm:text-base">
+                    <div>
+                        <h3 class="font-bold text-xl flex items-center text-gray-800 mb-2">🏢 ภาพรวมธุรกิจทั้งหมด</h3>
+                        <p>ปัจจุบันมี 3 ธุรกิจหลัก ที่ฝ่ายกราฟิกและตัดต่อดูแลงานคอนเทนต์ให้ โดยเป้าหมายคือ สร้างผลงานภาพ / วิดีโอ / โพสต์ใหม่ทุกวัน เพื่อรักษาการมองเห็นและความสดใหม่ของเพจ แม้จะไม่ได้ถ่ายทุกวัน แต่จะหมุนเวียนคอนเทนต์จากแต่ละร้านอย่างสมดุล</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Business 1 -->
+                        <div class="p-4 border rounded-lg bg-red-50/50">
+                            <h4 class="font-bold text-lg text-red-800">🍲 1. ร้าน ลูกเจี๊ยบ หมูกระทะ</h4>
+                            <p class="mt-2"><b>ลักษณะร้าน:</b> ร้านบุฟเฟ่ต์หมูกระทะ บรรยากาศครอบครัว เน้นช่วงเย็น (เปิดเที่ยง – 4–5 ทุ่ม)</p>
+                            <p><b>ลูกค้าหลัก:</b> กลุ่มเพื่อน, ครอบครัว, วัยทำงาน</p>
+                            <p class="mt-2"><b>แนวคอนเทนต์:</b></p>
+                            <ul class="list-disc list-inside mt-1 space-y-1">
+                                <li>คลิปบรรยากาศยามเย็น / ไฟย่างหมู / ควัน / ความอบอุ่น</li>
+                                <li>ภาพโปรโมตเมนู / โปรโมชั่น</li>
+                                <li>คลิป “มีมขำ ๆ” หรือรีแอ็กต์ลูกค้า (ไวรัลสั้น 10–15 วิ)</li>
+                            </ul>
+                            <p class="mt-2"><b>สิ่งที่ทำประจำ:</b> ถ่ายจริง 2 ครั้ง/สัปดาห์ (เย็น), โพสต์ทุกวัน</p>
+                        </div>
+                        <!-- Business 2 -->
+                        <div class="p-4 border rounded-lg bg-yellow-50/50">
+                            <h4 class="font-bold text-lg text-yellow-800">🍛 2. ร้าน อิ่มสุข บุฟเฟ่ต์ & ข้าวแกง</h4>
+                            <p class="mt-2"><b>ลักษณะร้าน:</b> เปิดตั้งแต่เช้า (09.00 – 23.00) ช่วงเช้าเป็นข้าวแกง, กลางวัน–เย็นเป็นบุฟเฟ่ต์</p>
+                            <p><b>จุดเด่น:</b> “ครบทุกมื้อ ราคาคุ้มค่า”</p>
+                            <p class="mt-2"><b>แนวคอนเทนต์:</b></p>
+                            <ul class="list-disc list-inside mt-1 space-y-1">
+                                <li>คลิป “เช้าของอิ่มสุข” (เตรียมอาหาร)</li>
+                                <li>ภาพเมนูข้าวแกงรายวัน</li>
+                                <li>วิดีโอบรรยากาศลูกค้าช่วงเที่ยง</li>
+                                <li>อินโฟกราฟิกโปรโมชั่น/เมนูพิเศษ</li>
+                            </ul>
+                            <p class="mt-2"><b>สิ่งที่ทำประจำ:</b> ถ่ายจริง 2 ครั้ง/สัปดาห์ (สาย–เที่ยง), โพสต์ทุกวัน</p>
+                        </div>
+                        <!-- Business 3 -->
+                        <div class="p-4 border rounded-lg bg-blue-50/50">
+                            <h4 class="font-bold text-lg text-blue-800">📱 3. ร้าน นฏกรเทเลคอม</h4>
+                            <p class="mt-2"><b>ลักษณะร้าน:</b> จุดขายโทรศัพท์และอุปกรณ์เสริม, มีศูนย์บริการและซ่อม (เปิด 10.00 – 21.00)</p>
+                            <p class="mt-2"><b>แนวคอนเทนต์:</b></p>
+                            <ul class="list-disc list-inside mt-1 space-y-1">
+                                <li>คลิปแนะนำสินค้า/โปรโมชั่น/รีวิว</li>
+                                <li>Tips สั้น ๆ (เช่น เทคนิคประหยัดแบต)</li>
+                                <li>ภาพพนักงาน, ศูนย์ซ่อม, ป้ายโปร</li>
+                                <li>คลิปไวรัล “สถานการณ์ในร้าน”</li>
+                            </ul>
+                            <p class="mt-2"><b>สิ่งที่ทำประจำ:</b> ถ่ายจริง 2 ครั้ง/สัปดาห์ (เที่ยง–เย็น), โพสต์ทุกวัน</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-bold text-xl flex items-center text-gray-800 mb-2">🎯 เป้าหมายการดำเนินงาน</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>สร้างผลงานใหม่ทุกวัน (3 ร้าน = 3 ชิ้นต่อวัน)</li>
+                                <li>ใช้คอนเทนต์ถ่ายใหม่ + สต็อกเก็บไว้หมุนเวียน</li>
+                                <li>ถ่ายจริงแต่ละร้านไม่เกิน 2 ครั้ง/สัปดาห์</li>
+                                <li>ทำระบบแจ้งตารางถ่ายล่วงหน้าและสรุปงานใน LINE กลุ่ม</li>
+                            </ul>
+                        </div>
+
+                         <div>
+                            <h3 class="font-bold text-xl flex items-center text-gray-800 mb-2">📈 ประโยชน์ที่องค์กรจะได้รับ</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>มีคอนเทนต์ใหม่ทุกวันในทุกธุรกิจ</li>
+                                <li>สร้างภาพลักษณ์แบรนด์ต่อเนื่อง</li>
+                                <li>ใช้ทรัพยากรคุ้มค่า ไม่รบกวนร้านบ่อย</li>
+                                <li>พร้อมขยายทีมสื่อสารหรือแคมเปญออนไลน์ในอนาคตได้ทันที</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="high-level-plan-container" class="mb-10"></div>
 
     <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 border-b-2 border-blue-500 pb-2">ตารางงานประจำวัน</h2>
 
-    <!-- Shop Filter and Current Date Selector -->
-    <div class="bg-white p-4 rounded-xl shadow-lg mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-        
-        <!-- Filter buttons: Added overflow-x-auto for horizontal scrolling on mobile -->
-        <div class="flex overflow-x-auto space-x-2 pb-2 md:pb-0 mb-4 md:mb-0" id="shop-filter-container">
-            <!-- Filter buttons will be inserted here -->
+    <div class="modern-container mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex-shrink-0 overflow-x-auto" id="shop-filter-container">
+             <div class="flex space-x-2 pb-2"></div>
         </div>
-
-        <div class="flex items-center space-x-3 w-full md:w-auto">
+        <div class="flex items-center space-x-3 w-full md:w-auto flex-shrink-0">
             <label for="date-selector" class="font-semibold text-gray-700 text-sm md:text-base whitespace-nowrap">เลือกวันที่:</label>
             <input type="date" id="date-selector" class="w-full border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base">
         </div>
     </div>
 
-    <!-- Today's Schedule -->
     <section class="mb-10">
         <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
             <span id="today-title">งานวันนี้: </span>
         </h3>
-        <div id="today-schedule-container" class="modern-container min-h-[100px] shadow-lg">
-            <!-- Today's schedule content will be inserted here -->
-        </div>
+        <div id="today-schedule-container" class="modern-container min-h-[100px]"></div>
     </section>
 
-    <!-- NEW SECTION: Content Calendar -->
     <section class="mb-10">
         <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            ปฏิทินการโพสต์ (Content Calendar) - เดือนตุลาคม 2568 (คลิกที่วันเพื่อดูรายละเอียด)
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            ปฏิทินคอนเทนต์และการถ่ายทำ
         </h3>
-        <!-- Calendar will be rendered here -->
-        <div id="content-calendar-container" class="modern-container overflow-x-auto p-0">
-            <!-- Content will be rendered by renderContentCalendar() -->
+        <div class="modern-container p-2 sm:p-4">
+            <div id="content-calendar-container" class="overflow-x-auto"></div>
+            <!-- NEW: Calendar Legend -->
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-gray-600">
+                <div class="flex items-center">
+                    <span class="w-4 h-4 rounded mr-2" style="background-color: #c6f6d5; border: 1px solid #22543d;"></span>
+                    <span>งานถ่ายทำ</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-4 h-4 rounded mr-2" style="background-color: #bee3f8; border: 1px solid #2c5282;"></span>
+                    <span>นฏกรเทเลคอม</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-4 h-4 rounded mr-2" style="background-color: #faf089; border: 1px solid #975a16;"></span>
+                    <span>อิ่มสุข</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-4 h-4 rounded mr-2" style="background-color: #fed7d7; border: 1px solid #9b2c2c;"></span>
+                    <span>ลูกเจี๊ยบ</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-4 h-4 rounded mr-2" style="background-color: #e9d8fd; border: 1px solid #553c9a;"></span>
+                    <span>วันหยุด/สำรอง</span>
+                </div>
+            </div>
         </div>
     </section>
-    <!-- END NEW SECTION: Content Calendar -->
 
-    <!-- Performance Summary -->
     <section class="mb-10">
         <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l3-3m0 0l3 3m-3-3v14m-3 0h6" />
-            </svg>
-            ผลการดำเนินงานรายวัน (เฉพาะวันที่เสร็จสิ้นแล้ว)
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l3-3m0 0l3 3m-3-3v14m-3 0h6" /></svg>
+            ผลการดำเนินงานรายวัน
         </h3>
-        <div id="performance-container" class="space-y-4">
-            <!-- Performance cards will be inserted here -->
-        </div>
+        <div id="performance-container" class="space-y-4"></div>
     </section>
-
 </main>
 
-<!-- Modal Structure (Added for displaying calendar day details) -->
-<!-- Fixed inset-0 for full screen, z-[100] for high layer, hidden by default -->
 <div id="calendar-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/30 backdrop-blur-sm" onclick="closeModal()">
-    <div class="bg-white modern-container w-full max-w-lg md:max-w-xl max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <div class="modern-container w-full max-w-lg md:max-w-xl max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center pb-3 border-b border-gray-200">
-            <h3 id="modal-title" class="text-xl font-bold text-gray-800"></h3>
+            <h3 id="modal-title" class="text-lg sm:text-xl font-bold text-gray-800"></h3>
             <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition duration-150 p-1 rounded-full hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
-        <div id="modal-content" class="pt-4 space-y-4">
-            <!-- Content will be inserted here -->
-        </div>
+        <div id="modal-content" class="pt-4 space-y-4"></div>
     </div>
 </div>
-<!-- End Modal Structure -->
-
 
 <script type="module">
-    // ตั้งค่าตัวแปร Global
     let currentFilter = 'All';
-    // ตั้งวันที่เริ่มต้นเป็นวันที่ 8 ตุลาคม 2568 (ตามข้อมูลในตารางงาน)
-    let currentDate = new Date(2025, 9, 8); // Month is 0-indexed, so 9 is October 
+    let currentDate = new Date(2025, 9, 8); 
 
-    // Function: Parses the details string into HTML list items
-    function parseDetails(detailsString) {
-        if (!detailsString) return '';
-        // Split by the custom delimiter ' | '
-        const items = detailsString.split(' | '); 
-        return `
-            <ul class="list-disc ml-5 space-y-1 text-xs md:text-sm text-gray-600 mt-1">
-                ${items.map(item => `<li>${item.trim()}</li>`).join('')}
-            </ul>
-        `;
-    }
+    const scheduleData = [ { date: "2025-10-06", day: "จันทร์ 6 ต.ค.", tasks: [ { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "เช็คสต็อกสินค้าใหม่", status: "completed" }, { time: "11:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพเมนูข้าวแกงเช้า", status: "completed" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ออกแบบกราฟิกโปรโมชั่น", status: "pending" }, { time: "16:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ตัดต่อคลิป TikTok", status: "completed" }, { time: "19:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "โพสต์ลง Facebook (กำหนดเวลา)", status: "completed" } ], issues: [] }, { date: "2025-10-07", day: "อังคาร 7 ต.ค.", tasks: [ { time: "9:30", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายภาพบรรยากาศร้านตอนเย็น (Pre-shoot)", status: "completed" }, { time: "11:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายวิดีโอรีวิวอุปกรณ์เสริม", status: "completed" }, { time: "14:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ตัดต่อคลิป Reel", status: "completed" }, { time: "16:30", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ออกแบบปกเพจ", status: "completed" } ], issues: ["กราฟิกปกเพจใช้เวลานานกว่าที่คาดไว้"] }, { date: "2025-10-08", day: "พุธ 8 ต.ค.", tasks: [ { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพเมนูบุฟเฟ่ต์ใหม่", status: "pending" }, { time: "13:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายวิดีโอโปร 10.10", status: "pending" }, { time: "16:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ตัดต่อคลิปสั้นสำหรับ TikTok", status: "pending" } ], issues: [] }, { date: "2025-10-09", day: "พฤหัส 9 ต.ค.", tasks: [ { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ออกแบบกราฟิกแบนเนอร์", status: "pending" }, { time: "11:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายภาพบรรยากาศแสงเย็น", status: "pending" }, { time: "14:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ตัดต่อวิดีโอรีวิวลูกค้า", status: "pending" } ], issues: [] }, { date: "2025-10-10", day: "ศุกร์ 10 ต.ค.", tasks: [ { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพเมนูข้าวแกงเช้า", status: "pending" }, { time: "12:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "โพสต์โปร 10.10", status: "pending" }, { time: "16:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายวิดีโอสั้น 'ไฟย่างฉ่ำๆ'", status: "pending" } ], issues: [] }, { date: "2025-10-11", day: "เสาร์ 11 ต.ค.", tasks: [ { time: "9:30", shop: "ทุกแบรนด์", title: "วันตัดต่อและออกแบบกราฟิกทั้งหมด", status: "pending" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "เตรียมโพสต์สำหรับสัปดาห์หน้า", status: "pending" } ], issues: [] }, { date: "2025-10-12", day: "อาทิตย์ 12 ต.ค.", tasks: [ { time: "9:30", shop: "-", title: "วันหยุด", status: "completed" } ], issues: [] }, { date: "2025-10-13", day: "จันทร์ 13 ต.ค.", tasks: [ { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายคลิป Tips มือถือ", status: "pending" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายภาพครอบครัว / แสงเย็น", status: "pending" }, { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ตัดต่อคลิป Reel", status: "pending" } ], issues: [] }, { date: "2025-10-14", day: "อังคาร 14 ต.ค.", tasks: [ { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายรีวิวลูกค้า / บรรยากาศเที่ยง", status: "pending" }, { time: "13:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ออกแบบกราฟิกสินค้าใหม่", status: "pending" }, { time: "16:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายแสงไฟย่าง", status: "pending" } ], issues: [] }, { date: "2025-10-15", day: "พุธ 15 ต.ค.", tasks: [ { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายภาพสินค้าใหม่", status: "pending" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ตัดต่อคลิปตลกพนักงาน", status: "pending" }, { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "โพสต์เมนูบุฟเฟ่ต์", status: "pending" } ], issues: [] }, { date: "2025-10-16", day: "พฤหัส 16 ต.ค.", tasks: [ { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อและออกแบบกราฟิกทั้งหมด (คิว 3 ร้าน)", status: "pending" }, { time: "15:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายสั้นศูนย์ซ่อม", status: "pending" } ], issues: [] }, { date: "2025-10-17", day: "ศุกร์ 17 ต.ค.", tasks: [ { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพรวมร้าน", status: "pending" }, { time: "12:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายภาพรวมร้าน", status: "pending" }, { time: "16:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ตัดต่อคลิป Before/After ซ่อม", status: "pending" } ], issues: [] }, { date: "2025-10-18", day: "เสาร์ 18 ต.ค.", tasks: [ { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อและออกแบบกราฟิกสำหรับโพสต์วันหยุด", status: "pending" }, { time: "14:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "เตรียมคอนเทนต์สำรอง", status: "pending" } ], issues: [] }, { date: "2025-10-19", day: "อาทิตย์ 19 ต.ค.", tasks: [ { time: "9:30", shop: "-", title: "วันหยุด", status: "completed" } ], issues: [] }, { date: "2025-10-20", day: "จันทร์ 20 ต.ค.", tasks: [ { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายโปรสิ้นเดือน / รีวิวลูกค้า", status: "pending" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายคลิป 'หมูกระทะใครสุกก่อนแพ้'", status: "pending" }, { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ออกแบบกราฟิกเมนูพิเศษ", status: "pending" } ], issues: [] }, { date: "2025-10-21", day: "อังคาร 21 ต.ค.", tasks: [ { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายเมนูพิเศษรายสัปดาห์", status: "pending" }, { time: "13:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ตัดต่อคลิปสั้น", status: "pending" }, { time: "16:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายแสงเย็น", status: "pending" } ], issues: [] }, { date: "2025-10-22", day: "พุธ 22 ต.ค.", tasks: [ { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายภาพโปรแถมของ", status: "pending" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ตัดต่อคลิปตลกพนักงาน", status: "pending" }, { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "โพสต์เมนูพิเศษ", status: "pending" } ], issues: [] }, { date: "2025-10-23", day: "พฤหัส 23 ต.ค.", tasks: [ { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อรวม / เตรียมโพสต์สุดสัปดาห์", status: "pending" }, { time: "14:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ออกแบบแบนเนอร์โปรโมชั่น", status: "pending" } ], issues: [] }, { date: "2025-10-24", day: "ศุกร์ 24 ต.ค.", tasks: [ { time: "9:30", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายคนแน่นร้าน / Meme พนักงาน", status: "pending" }, { time: "12:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพรวมร้าน", status: "pending" }, { time: "16:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "โพสต์โปรสิ้นเดือน", status: "pending" } ], issues: [] }, { date: "2025-10-25", day: "เสาร์ 25 ต.ค.", tasks: [ { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อและออกแบบกราฟิกสำหรับโพสต์วันหยุด", status: "pending" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "เตรียมคอนเทนต์สำรอง", status: "pending" } ], issues: [] }, { date: "2025-10-26", day: "อาทิตย์ 26 ต.ค.", tasks: [ { time: "9:30", shop: "-", title: "วันหยุด", status: "completed" } ], issues: [] }, { date: "2025-10-27", day: "จันทร์ 27 ต.ค.", tasks: [ { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายเมนูพิเศษปลายเดือน", status: "pending" }, { time: "14:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายโปร Halloween", status: "pending" }, { time: "17:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ออกแบบกราฟิกโปรสิ้นเดือน", status: "pending" } ], issues: [] }, { date: "2025-10-28", day: "อังคาร 28 ต.ค.", tasks: [ { time: "9:30", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายคลิปตลกพนักงาน", status: "pending" }, { time: "13:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ตัดต่อคลิปสั้น", status: "pending" }, { time: "16:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "โพสต์โปร Halloween", status: "pending" } ], issues: [] }, { date: "2025-10-29", day: "พุธ 29 ต.ค.", tasks: [ { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายภาพรวมร้าน", status: "pending" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "โพสต์โปรสิ้นเดือน", status: "pending" }, { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพเมนูบุฟเฟ่ต์", status: "pending" } ], issues: [] }, { date: "2025-10-30", day: "พฤหัส 30 ต.ค.", tasks: [ { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อรวม / สรุปคลิปและกราฟิกทั้งเดือน", status: "pending" }, { time: "14:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "เตรียมคอนเทนต์สำรองสำหรับเดือน พ.ย.", status: "pending" } ], issues: [] }, { date: "2025-10-31", day: "ศุกร์ 31 ต.ค.", tasks: [ { time: "9:30", shop: "ทุกแบรนด์", title: "รวม Footage + ทำคลิป 'Best Moments เดือนตุลา'", status: "pending" }, { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "เตรียมโพสต์สำหรับสัปดาห์หน้า", status: "pending" } ], issues: [] } ];
+    const highLevelPlan = { "month": "ตุลาคม 2568", "team": "ฝ่ายกราฟิกและตัดต่อวิดีโอ", "work_time": "09:30 - 20:30", "day_off": "อาทิตย์", "shops": [ "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", "ลูกเจี๊ยบ หมูกระทะ" ], "rules": { "max_shoot_per_shop_per_week": 2, "daily_output": "อย่างน้อย 1 ชิ้นต่อร้านต่อวัน (ภาพหรือวิดีโอ)", "daily_post": "ทุกร้านต้องมีโพสต์ทุกวัน", "objective": "ลดภาระงานภาคสนามแต่ยังคงคุณภาพและความต่อเนื่องของคอนเทนต์" }, "weekly_schedule": [ { "week": 1, "date_range": "8–12 ตุลาคม", "tasks": [ { "day": "พุธ 8 ต.ค.", "task": "ถ่ายวันแรก", "shop": "นฏกรเทเลคอม", "content_details": "ถ่ายโปร 10.10 สำหรับแบนเนอร์ | ถ่ายทีมงานบริการ (วิดีโอสั้น) | ถ่ายภาพสินค้าหลักที่ร่วมโปร" }, { "day": "พฤหัส 9 ต.ค.", "task": "ถ่ายเช้า / ตัดต่อบ่าย", "shop": "อิ่มสุข", "content_details": "ถ่ายเมนูข้าวแกงเช้า (มุม Top View) | ถ่ายบรรยากาศร้านช่วงลูกค้าเข้า | ตัดต่อคลิปเที่ยง (30 วิ)" }, { "day": "ศุกร์ 10 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "content_details": "ถ่ายช่วงเริ่มตั้งเตา (ควัน) | ถ่ายไฟย่างฉ่ำๆ (Slow Motion) | ถ่าย Meme สั้น 'สายหมูตัวจริง' (พนักงาน)" }, { "day": "เสาร์ 11 ต.ค.", "task": "วันตัดต่อรวม", "shop": "ทุกแบรนด์", "content_details": "ตัดต่อคลิปทั้งหมด (รวม 5 คลิป) | ออกแบบกราฟิกแบนเนอร์ 3 ร้าน (แบนเนอร์โปรวันหยุด)" }, { "day": "อาทิตย์ 12 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" } ] }, { "week": 2, "date_range": "13–19 ตุลาคม", "tasks": [ { "day": "จันทร์ 13 ต.ค.", "task": "ถ่ายบ่าย", "shop": "นฏกรเทเลคอม", "content_details": "ถ่ายคลิป Tips มือถือ '3 เคล็ดลับเพิ่มแบต' | ภาพสินค้าใหม่ (Focus สินค้า 5 ชิ้น)" }, { "day": "อังคาร 14 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "content_details": "ถ่ายภาพครอบครัวทานหมู (เน้นความสุข) | ถ่ายแสงเย็น (ภาพนิ่ง) | ถ่ายไฟย่าง (วิดีโอ 15 วิ)" }, { "day": "พุธ 15 ต.ค.", "task": "ถ่ายสาย", "shop": "อิ่มสุข", "content_details": "ถ่ายรีวิวลูกค้า (สัมภาษณ์สั้น 1 ท่าน) | ถ่ายบรรยากาศเที่ยง (มุมกว้าง) | ถ่ายวิดีโอสั้น 'ตักไม่อั้น'" }, { "day": "พฤหัส 16 ต.ค.", "task": "ตัดต่อ + ออกแบบ", "shop": "ทุกแบรนด์", "content_details": "รวมคลิป (4 ชิ้น) | ออกแบบโพสต์คิว 3 ร้าน (รวม 6 ชิ้น)" }, { "day": "ศุกร์ 17 ต.ค.", "task": "ถ่ายสั้น / ตัดต่อเสริม", "shop": "นฏกรเทเลคอม", "content_details": "ถ่ายสั้นศูนย์ซ่อม (ช่างกำลังซ่อม) | คลิป Before-After ซ่อมจอแตก (เน้นความรวดเร็ว)" }, { "day": "เสาร์ 18 ต.ค.", "task": "ถ่ายเสริม / บรรยากาศรวม", "shop": "อิ่มสุข + ลูกเจี๊ยบ", "content_details": "ภาพรวมร้าน/ป้ายร้าน (อิ่มสุข) | ภาพลูกค้าแน่น (ลูกเจี๊ยบ) | ถ่ายภาพนิ่งสำรอง (2 ร้าน)" }, { "day": "อาทิตย์ 19 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" } ] }, { "week": 3, "date_range": "20–26 ตุลาคม", "tasks": [ { "day": "จันทร์ 20 ต.ค.", "task": "ถ่ายเช้า", "shop": "นฏกรเทเลคอม", "content_details": "โปรสิ้นเดือน (แบนเนอร์) | รีวิวลูกค้าใหม่ (ภาพนิ่ง 3 ท่าน) | ถ่ายวิดีโอสั้นพนักงานแนะนำโปร" }, { "day": "อังคาร 21 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "content_details": "คลิป 'หมูกระทะใครสุกก่อนแพ้' (เน้นฮา) | ถ่ายแสงเย็น (ภาพรวมร้าน)" }, { "day": "พุธ 22 ต.ค.", "task": "ถ่ายสาย", "shop": "อิ่มสุข", "content_details": "ถ่ายเมนูพิเศษรายสัปดาห์ (VDO + ภาพสวย 3 มุม) | ถ่าย VDO สั้น 'เมนูเด็ดต้องลอง'" }, { "day": "พฤหัส 23 ต.ค.", "task": "ตัดต่อรวม", "shop": "ทุกแบรนด์", "content_details": "รวมคลิปทั้งหมด (6 ชิ้น) | เตรียมโพสต์สุดสัปดาห์ (3 ร้าน) | กราฟิกใหม่ 2 ชิ้น" }, { "day": "ศุกร์ 24 ต.ค.", "task": "ถ่ายเสริม / ภาพโปร", "shop": "นฏกรเทเลคอม", "content_details": "ถ่ายภาพโปรแถมของ (แกะกล่อง) | ภาพแบนเนอร์โปรโมชั่น 1 ชิ้น" }, { "day": "เสาร์ 25 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "content_details": "ถ่ายคนแน่นร้าน (วิดีโอ Hyperlapse) | ถ่าย Meme พนักงาน 'วันเสาร์ต้องหมูกระทะ'" }, { "day": "อาทิตย์ 26 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" } ] }, { "week": 4, "date_range": "27–31 ตุลาคม", "tasks": [ { "day": "จันทร์ 27 ต.ค.", "task": "ถ่ายสาย", "shop": "อิ่มสุข", "content_details": "ถ่ายเมนูพิเศษปลายเดือน (เน้นเทศกาล) | ถ่ายบรรยากาศร้าน (สว่าง/สะอาด)" }, { "day": "อังคาร 28 ต.ค.", "task": "ถ่ายบ่าย", "shop": "นฏกรเทเลคอม", "content_details": "ถ่ายโปร Halloween 'มือถือไม่หลอก' (Concept สนุก) | ออกแบบกราฟิก Halloween" }, { "day": "พุธ 29 ต.ค.", "task": "ถ่ายเย็น", "shop": "ลูกเจี๊ยบ หมูกระทะ", "content_details": "ถ่ายโปรสิ้นเดือน (ภาพโปรใหญ่) | คลิปตลกพนักงาน 'ก่อน/หลังกินหมูกระทะ'" }, { "day": "พฤหัส 30 ต.ค.", "task": "ตัดต่อรวม", "shop": "ทุกแบรนด์", "content_details": "สรุปคลิปและกราฟิกทั้งเดือน | เตรียมคอนเทนต์สำรอง 5 ชิ้น สำหรับเดือน พ.ย." }, { "day": "ศุกร์ 31 ต.ค.", "task": "รวม Footage + คลิปรีแคป", "shop": "ทุกแบรนด์", "content_details": "รวม Footage ที่ดีที่สุด | ทำคลิป 'Best Moments เดือนตุลา' (ยาว 60-90 วิ)" } ] } ], "posting_rotation": [ { "day": "จันทร์", "main_shop": "นฏกรเทเลคอม", "content": "นฏกร: ภาพโปร/รีวิวซ่อม (Main) | อิ่มสุข: ภาพตักแกง | ลูกเจี๊ยบ: Meme สั้น", "shop_tags": ["นฏกร: Main", "อิ่มสุข: Sub", "ลูกเจี๊ยบ: Sub"] }, { "day": "อังคาร", "main_shop": "ลูกเจี๊ยบ หมูกระทะ", "content": "ลูกเจี๊ยบ: Meme/Reel สนุก (Main) | นฏกร: Tips มือถือ | อิ่มสุข: ภาพลูกค้า", "shop_tags": ["ลูกเจี๊ยบ: Main", "นฏกร: Sub", "อิ่มสุข: Sub"] }, { "day": "พุธ", "main_shop": "อิ่มสุข", "content": "อิ่มสุข: ภาพเมนู/คลิปรีวิว (Main) | นฏกร: ภาพสินค้าใหม่ | ลูกเจี๊ยบ: ภาพบรรยากาศย่าง", "shop_tags": ["อิ่มสุข: Main", "นฏกร: Sub", "ลูกเจี๊ยบ: Sub"] }, { "day": "พฤหัส", "main_shop": "รวม 3 ร้าน", "content": "นฏกร: Story เบื้องหลังซ่อม | อิ่มสุข: Infographic | ลูกเจี๊ยบ: Reel ตลก", "shop_tags": ["นฏกร: Post", "อิ่มสุข: Post", "ลูกเจี๊ยบ: Post"] }, { "day": "ศุกร์", "main_shop": "นฏกรเทเลคอม", "content": "นฏกร: โปรโมชั่น/แบนเนอร์ (Main) | อิ่มสุข: ภาพเมนูพิเศษ | ลูกเจี๊ยบ: ภาพคนแน่นร้าน", "shop_tags": ["นฏกร: Main", "อิ่มสุข: Sub", "ลูกเจี๊ยบ: Sub"] }, { "day": "เสาร์", "main_shop": "ลูกเจี๊ยบ + อิ่มสุข", "content": "ลูกเจี๊ยบ: บรรยากาศคนแน่น (Main) | อิ่มสุข: เสาร์สุขอิ่ม (Main) | นฏกร: ภาพรวมร้าน", "shop_tags": ["ลูกเจี๊ยบ: Main", "อิ่มสุข: Main", "นฏกร: Sub"] }, { "day": "อาทิตย์", "main_shop": "คอนเทนต์สำรอง", "content": "ทุกร้าน: ใช้คอนเทนต์สำรอง / รวมไฮไลต์สัปดาห์", "shop_tags": ["ทุกร้าน: Backup"] } ] };
 
-    // ตัวอย่างข้อมูลตารางงาน (Daily Task Execution)
-    // ข้อมูลนี้ใช้สำหรับแสดงผลงานประจำวันและรายงานผลการดำเนินงาน
-    const scheduleData = [
-        // --- ส่วนที่ 1: ข้อมูลที่ใช้เป็นตัวอย่าง (สมมติว่าเป็นงานที่ทำไปแล้ว) ---
-        {
-            date: "2025-10-06",
-            day: "จันทร์ 6 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "เช็คสต็อกสินค้าใหม่", status: "completed" },
-                { time: "11:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพเมนูข้าวแกงเช้า", status: "completed" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ออกแบบกราฟิกโปรโมชั่น", status: "pending" },
-                { time: "16:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ตัดต่อคลิป TikTok", status: "completed" },
-                { time: "19:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "โพสต์ลง Facebook (กำหนดเวลา)", status: "completed" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-07",
-            day: "อังคาร 7 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายภาพบรรยากาศร้านตอนเย็น (Pre-shoot)", status: "completed" },
-                { time: "11:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายวิดีโอรีวิวอุปกรณ์เสริม", status: "completed" },
-                { time: "14:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ตัดต่อคลิป Reel", status: "completed" },
-                { time: "16:30", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ออกแบบปกเพจ", status: "completed" },
-            ],
-            issues: ["กราฟิกปกเพจใช้เวลานานกว่าที่คาดไว้"]
-        },
-        // --- ส่วนที่ 2: ข้อมูลที่กำหนดไว้ในอนาคต (ต.ค. 8-31) ---
-        {
-            date: "2025-10-08",
-            day: "พุธ 8 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพเมนูบุฟเฟ่ต์ใหม่", status: "pending" },
-                { time: "13:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายวิดีโอโปร 10.10", status: "pending" },
-                { time: "16:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ตัดต่อคลิปสั้นสำหรับ TikTok", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-09",
-            day: "พฤหัส 9 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ออกแบบกราฟิกแบนเนอร์", status: "pending" },
-                { time: "11:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายภาพบรรยากาศแสงเย็น", status: "pending" },
-                { time: "14:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ตัดต่อวิดีโอรีวิวลูกค้า", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-10",
-            day: "ศุกร์ 10 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพเมนูข้าวแกงเช้า", status: "pending" },
-                { time: "12:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "โพสต์โปร 10.10", status: "pending" },
-                { time: "16:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายวิดีโอสั้น 'ไฟย่างฉ่ำๆ'", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-11",
-            day: "เสาร์ 11 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ทุกแบรนด์", title: "วันตัดต่อและออกแบบกราฟิกทั้งหมด", status: "pending" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "เตรียมโพสต์สำหรับสัปดาห์หน้า", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-12",
-            day: "อาทิตย์ 12 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "-", title: "วันหยุด", status: "completed" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-13",
-            day: "จันทร์ 13 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายคลิป Tips มือถือ", status: "pending" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายภาพครอบครัว / แสงเย็น", status: "pending" },
-                { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ตัดต่อคลิป Reel", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-14",
-            day: "อังคาร 14 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายรีวิวลูกค้า / บรรยากาศเที่ยง", status: "pending" },
-                { time: "13:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ออกแบบกราฟิกสินค้าใหม่", status: "pending" },
-                { time: "16:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายแสงไฟย่าง", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-15",
-            day: "พุธ 15 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายภาพสินค้าใหม่", status: "pending" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ตัดต่อคลิปตลกพนักงาน", status: "pending" },
-                { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "โพสต์เมนูบุฟเฟ่ต์", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-16",
-            day: "พฤหัส 16 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อและออกแบบกราฟิกทั้งหมด (คิว 3 ร้าน)", status: "pending" },
-                { time: "15:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายสั้นศูนย์ซ่อม", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-17",
-            day: "ศุกร์ 17 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพรวมร้าน", status: "pending" },
-                { time: "12:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายภาพรวมร้าน", status: "pending" },
-                { time: "16:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ตัดต่อคลิป Before/After ซ่อม", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-18",
-            day: "เสาร์ 18 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อและออกแบบกราฟิกสำหรับโพสต์วันหยุด", status: "pending" },
-                { time: "14:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "เตรียมคอนเทนต์สำรอง", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-19",
-            day: "อาทิตย์ 19 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "-", title: "วันหยุด", status: "completed" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-20",
-            day: "จันทร์ 20 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายโปรสิ้นเดือน / รีวิวลูกค้า", status: "pending" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายคลิป 'หมูกระทะใครสุกก่อนแพ้'", status: "pending" },
-                { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ออกแบบกราฟิกเมนูพิเศษ", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-21",
-            day: "อังคาร 21 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายเมนูพิเศษรายสัปดาห์", status: "pending" },
-                { time: "13:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ตัดต่อคลิปสั้น", status: "pending" },
-                { time: "16:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายแสงเย็น", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-22",
-            day: "พุธ 22 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายภาพโปรแถมของ", status: "pending" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ตัดต่อคลิปตลกพนักงาน", status: "pending" },
-                { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "โพสต์เมนูพิเศษ", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-23",
-            day: "พฤหัส 23 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อรวม / เตรียมโพสต์สุดสัปดาห์", status: "pending" },
-                { time: "14:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ออกแบบแบนเนอร์โปรโมชั่น", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-24",
-            day: "ศุกร์ 24 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายคนแน่นร้าน / Meme พนักงาน", status: "pending" },
-                { time: "12:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพรวมร้าน", status: "pending" },
-                { time: "16:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "โพสต์โปรสิ้นเดือน", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-25",
-            day: "เสาร์ 25 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อและออกแบบกราฟิกสำหรับโพสต์วันหยุด", status: "pending" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "เตรียมคอนเทนต์สำรอง", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-26",
-            day: "อาทิตย์ 26 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "-", title: "วันหยุด", status: "completed" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-27",
-            day: "จันทร์ 27 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายเมนูพิเศษปลายเดือน", status: "pending" },
-                { time: "14:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายโปร Halloween", status: "pending" },
-                { time: "17:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ออกแบบกราฟิกโปรสิ้นเดือน", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-28",
-            day: "อังคาร 28 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "ถ่ายคลิปตลกพนักงาน", status: "pending" },
-                { time: "13:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ตัดต่อคลิปสั้น", status: "pending" },
-                { time: "16:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "โพสต์โปร Halloween", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-29",
-            day: "พุธ 29 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "ถ่ายภาพรวมร้าน", status: "pending" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "โพสต์โปรสิ้นเดือน", status: "pending" },
-                { time: "17:00", shop: "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)", title: "ถ่ายภาพเมนูบุฟเฟ่ต์", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-30",
-            day: "พฤหัส 30 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ทุกแบรนด์", title: "ตัดต่อรวม / สรุปคลิปและกราฟิกทั้งเดือน", status: "pending" },
-                { time: "14:00", shop: "นฏกรเทเลคอม (เดอะมอลล์ โคราช)", title: "เตรียมคอนเทนต์สำรองสำหรับเดือน พ.ย.", status: "pending" }
-            ],
-            issues: []
-        },
-        {
-            date: "2025-10-31",
-            day: "ศุกร์ 31 ต.ค.",
-            tasks: [
-                { time: "9:30", shop: "ทุกแบรนด์", title: "รวม Footage + ทำคลิป 'Best Moments เดือนตุลา'", status: "pending" },
-                { time: "14:00", shop: "ลูกเจี๊ยบ หมูกระทะ", title: "เตรียมโพสต์สำหรับสัปดาห์หน้า", status: "pending" }
-            ],
-            issues: []
-        }
-    ];
-
-    // --- UPDATED DATA STRUCTURE: High-Level Plan (Monthly/Weekly Overview) ---
-    // เพิ่ม 'content_details' ในแต่ละ task เพื่อให้สามารถแสดงรายละเอียดแบบ Bullet Points ได้
-    const highLevelPlan = {
-        "month": "ตุลาคม 2568",
-        "team": "ฝ่ายกราฟิกและตัดต่อวิดีโอ",
-        "work_time": "09:30 - 20:30",
-        "day_off": "อาทิตย์",
-        "shops": [
-            "นฏกรเทเลคอม (เดอะมอลล์ โคราช)",
-            "อิ่มสุข (บุฟเฟ่ต์ / ข้าวแกง)",
-            "ลูกเจี๊ยบ หมูกระทะ"
-        ],
-        "rules": {
-            "max_shoot_per_shop_per_week": 2,
-            "daily_output": "อย่างน้อย 1 ชิ้นต่อร้านต่อวัน (ภาพหรือวิดีโอ)",
-            "daily_post": "ทุกร้านต้องมีโพสต์ทุกวัน",
-            "objective": "ลดภาระงานภาคสนามแต่ยังคงคุณภาพและความต่อเนื่องของคอนเทนต์"
-        },
-        "weekly_schedule": [
-            {
-                "week": 1,
-                "date_range": "8–12 ตุลาคม",
-                "tasks": [
-                    { 
-                        "day": "พุธ 8 ต.ค.", 
-                        "task": "ถ่ายวันแรก", 
-                        "shop": "นฏกรเทเลคอม", 
-                        "content_details": "ถ่ายโปร 10.10 สำหรับแบนเนอร์ | ถ่ายทีมงานบริการ (วิดีโอสั้น) | ถ่ายภาพสินค้าหลักที่ร่วมโปร" 
-                    },
-                    { 
-                        "day": "พฤหัส 9 ต.ค.", 
-                        "task": "ถ่ายเช้า / ตัดต่อบ่าย", 
-                        "shop": "อิ่มสุข", 
-                        "content_details": "ถ่ายเมนูข้าวแกงเช้า (มุม Top View) | ถ่ายบรรยากาศร้านช่วงลูกค้าเข้า | ตัดต่อคลิปเที่ยง (30 วิ)" 
-                    },
-                    { 
-                        "day": "ศุกร์ 10 ต.ค.", 
-                        "task": "ถ่ายเย็น", 
-                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
-                        "content_details": "ถ่ายช่วงเริ่มตั้งเตา (ควัน) | ถ่ายไฟย่างฉ่ำๆ (Slow Motion) | ถ่าย Meme สั้น 'สายหมูตัวจริง' (พนักงาน)" 
-                    },
-                    { 
-                        "day": "เสาร์ 11 ต.ค.", 
-                        "task": "วันตัดต่อรวม", 
-                        "shop": "ทุกแบรนด์", 
-                        "content_details": "ตัดต่อคลิปทั้งหมด (รวม 5 คลิป) | ออกแบบกราฟิกแบนเนอร์ 3 ร้าน (แบนเนอร์โปรวันหยุด)" 
-                    },
-                    { "day": "อาทิตย์ 12 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" }
-                ]
-            },
-            {
-                "week": 2,
-                "date_range": "13–19 ตุลาคม",
-                "tasks": [
-                    { 
-                        "day": "จันทร์ 13 ต.ค.", 
-                        "task": "ถ่ายบ่าย", 
-                        "shop": "นฏกรเทเลคอม", 
-                        "content_details": "ถ่ายคลิป Tips มือถือ '3 เคล็ดลับเพิ่มแบต' | ภาพสินค้าใหม่ (Focus สินค้า 5 ชิ้น)" 
-                    },
-                    { 
-                        "day": "อังคาร 14 ต.ค.", 
-                        "task": "ถ่ายเย็น", 
-                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
-                        "content_details": "ถ่ายภาพครอบครัวทานหมู (เน้นความสุข) | ถ่ายแสงเย็น (ภาพนิ่ง) | ถ่ายไฟย่าง (วิดีโอ 15 วิ)" 
-                    },
-                    { 
-                        "day": "พุธ 15 ต.ค.", 
-                        "task": "ถ่ายสาย", 
-                        "shop": "อิ่มสุข", 
-                        "content_details": "ถ่ายรีวิวลูกค้า (สัมภาษณ์สั้น 1 ท่าน) | ถ่ายบรรยากาศเที่ยง (มุมกว้าง) | ถ่ายวิดีโอสั้น 'ตักไม่อั้น'" 
-                    },
-                    { 
-                        "day": "พฤหัส 16 ต.ค.", 
-                        "task": "ตัดต่อ + ออกแบบ", 
-                        "shop": "ทุกแบรนด์", 
-                        "content_details": "รวมคลิป (4 ชิ้น) | ออกแบบโพสต์คิว 3 ร้าน (รวม 6 ชิ้น)" 
-                    },
-                    { 
-                        "day": "ศุกร์ 17 ต.ค.", 
-                        "task": "ถ่ายสั้น / ตัดต่อเสริม", 
-                        "shop": "นฏกรเทเลคอม", 
-                        "content_details": "ถ่ายสั้นศูนย์ซ่อม (ช่างกำลังซ่อม) | คลิป Before-After ซ่อมจอแตก (เน้นความรวดเร็ว)" 
-                    },
-                    { 
-                        "day": "เสาร์ 18 ต.ค.", 
-                        "task": "ถ่ายเสริม / บรรยากาศรวม", 
-                        "shop": "อิ่มสุข + ลูกเจี๊ยบ", 
-                        "content_details": "ภาพรวมร้าน/ป้ายร้าน (อิ่มสุข) | ภาพลูกค้าแน่น (ลูกเจี๊ยบ) | ถ่ายภาพนิ่งสำรอง (2 ร้าน)" 
-                    },
-                    { "day": "อาทิตย์ 19 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" }
-                ]
-            },
-            {
-                "week": 3,
-                "date_range": "20–26 ตุลาคม",
-                "tasks": [
-                    { 
-                        "day": "จันทร์ 20 ต.ค.", 
-                        "task": "ถ่ายเช้า", 
-                        "shop": "นฏกรเทเลคอม", 
-                        "content_details": "โปรสิ้นเดือน (แบนเนอร์) | รีวิวลูกค้าใหม่ (ภาพนิ่ง 3 ท่าน) | ถ่ายวิดีโอสั้นพนักงานแนะนำโปร" 
-                    },
-                    { 
-                        "day": "อังคาร 21 ต.ค.", 
-                        "task": "ถ่ายเย็น", 
-                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
-                        "content_details": "คลิป 'หมูกระทะใครสุกก่อนแพ้' (เน้นฮา) | ถ่ายแสงเย็น (ภาพรวมร้าน)" 
-                    },
-                    { 
-                        "day": "พุธ 22 ต.ค.", 
-                        "task": "ถ่ายสาย", 
-                        "shop": "อิ่มสุข", 
-                        "content_details": "ถ่ายเมนูพิเศษรายสัปดาห์ (VDO + ภาพสวย 3 มุม) | ถ่าย VDO สั้น 'เมนูเด็ดต้องลอง'" 
-                    },
-                    { 
-                        "day": "พฤหัส 23 ต.ค.", 
-                        "task": "ตัดต่อรวม", 
-                        "shop": "ทุกแบรนด์", 
-                        "content_details": "รวมคลิปทั้งหมด (6 ชิ้น) | เตรียมโพสต์สุดสัปดาห์ (3 ร้าน) | กราฟิกใหม่ 2 ชิ้น" 
-                    },
-                    { 
-                        "day": "ศุกร์ 24 ต.ค.", 
-                        "task": "ถ่ายเสริม / ภาพโปร", 
-                        "shop": "นฏกรเทเลคอม", 
-                        "content_details": "ถ่ายภาพโปรแถมของ (แกะกล่อง) | ภาพแบนเนอร์โปรโมชั่น 1 ชิ้น" 
-                    },
-                    { 
-                        "day": "เสาร์ 25 ต.ค.", 
-                        "task": "ถ่ายเย็น", 
-                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
-                        "content_details": "ถ่ายคนแน่นร้าน (วิดีโอ Hyperlapse) | ถ่าย Meme พนักงาน 'วันเสาร์ต้องหมูกระทะ'" 
-                    },
-                    { "day": "อาทิตย์ 26 ต.ค.", "task": "หยุด", "shop": "-", "content_details": "ไม่มีงานภาคสนาม" }
-                ]
-            },
-            {
-                "week": 4,
-                "date_range": "27–31 ตุลาคม",
-                "tasks": [
-                    { 
-                        "day": "จันทร์ 27 ต.ค.", 
-                        "task": "ถ่ายสาย", 
-                        "shop": "อิ่มสุข", 
-                        "content_details": "ถ่ายเมนูพิเศษปลายเดือน (เน้นเทศกาล) | ถ่ายบรรยากาศร้าน (สว่าง/สะอาด)" 
-                    },
-                    { 
-                        "day": "อังคาร 28 ต.ค.", 
-                        "task": "ถ่ายบ่าย", 
-                        "shop": "นฏกรเทเลคอม", 
-                        "content_details": "ถ่ายโปร Halloween 'มือถือไม่หลอก' (Concept สนุก) | ออกแบบกราฟิก Halloween" 
-                    },
-                    { 
-                        "day": "พุธ 29 ต.ค.", 
-                        "task": "ถ่ายเย็น", 
-                        "shop": "ลูกเจี๊ยบ หมูกระทะ", 
-                        "content_details": "ถ่ายโปรสิ้นเดือน (ภาพโปรใหญ่) | คลิปตลกพนักงาน 'ก่อน/หลังกินหมูกระทะ'" 
-                    },
-                    { 
-                        "day": "พฤหัส 30 ต.ค.", 
-                        "task": "ตัดต่อรวม", 
-                        "shop": "ทุกแบรนด์", 
-                        "content_details": "สรุปคลิปและกราฟิกทั้งเดือน | เตรียมคอนเทนต์สำรอง 5 ชิ้น สำหรับเดือน พ.ย." 
-                    },
-                    { 
-                        "day": "ศุกร์ 31 ต.ค.", 
-                        "task": "รวม Footage + คลิปรีแคป", 
-                        "shop": "ทุกแบรนด์", 
-                        "content_details": "รวม Footage ที่ดีที่สุด | ทำคลิป 'Best Moments เดือนตุลา' (ยาว 60-90 วิ)" 
-                    }
-                ]
-            }
-        ],
-        "posting_rotation": [
-            { "day": "จันทร์", "main_shop": "นฏกรเทเลคอม", "content": "นฏกร: ภาพโปร/รีวิวซ่อม (Main) | อิ่มสุข: ภาพตักแกง | ลูกเจี๊ยบ: Meme สั้น", "shop_tags": ["นฏกร: Main", "อิ่มสุข: Sub", "ลูกเจี๊ยบ: Sub"] },
-            { "day": "อังคาร", "main_shop": "ลูกเจี๊ยบ หมูกระทะ", "content": "ลูกเจี๊ยบ: Meme/Reel สนุก (Main) | นฏกร: Tips มือถือ | อิ่มสุข: ภาพลูกค้า", "shop_tags": ["ลูกเจี๊ยบ: Main", "นฏกร: Sub", "อิ่มสุข: Sub"] },
-            { "day": "พุธ", "main_shop": "อิ่มสุข", "content": "อิ่มสุข: ภาพเมนู/คลิปรีวิว (Main) | นฏกร: ภาพสินค้าใหม่ | ลูกเจี๊ยบ: ภาพบรรยากาศย่าง", "shop_tags": ["อิ่มสุข: Main", "นฏกร: Sub", "ลูกเจี๊ยบ: Sub"] },
-            { "day": "พฤหัส", "main_shop": "รวม 3 ร้าน", "content": "นฏกร: Story เบื้องหลังซ่อม | อิ่มสุข: Infographic | ลูกเจี๊ยบ: Reel ตลก", "shop_tags": ["นฏกร: Post", "อิ่มสุข: Post", "ลูกเจี๊ยบ: Post"] },
-            { "day": "ศุกร์", "main_shop": "นฏกรเทเลคอม", "content": "นฏกร: โปรโมชั่น/แบนเนอร์ (Main) | อิ่มสุข: ภาพเมนูพิเศษ | ลูกเจี๊ยบ: ภาพคนแน่นร้าน", "shop_tags": ["นฏกร: Main", "อิ่มสุข: Sub", "ลูกเจี๊ยบ: Sub"] },
-            { "day": "เสาร์", "main_shop": "ลูกเจี๊ยบ + อิ่มสุข", "content": "ลูกเจี๊ยบ: บรรยากาศคนแน่น (Main) | อิ่มสุข: เสาร์สุขอิ่ม (Main) | นฏกร: ภาพรวมร้าน", "shop_tags": ["ลูกเจี๊ยบ: Main", "อิ่มสุข: Main", "นฏกร: Sub"] },
-            { "day": "อาทิตย์", "main_shop": "คอนเทนต์สำรอง", "content": "ทุกร้าน: ใช้คอนเทนต์สำรอง / รวมไฮไลต์สัปดาห์", "shop_tags": ["ทุกร้าน: Backup"] }
-        ]
-    };
-    // --- END UPDATED DATA STRUCTURE ---
-
-
-    // Function: Update the current time display
     function updateTime() {
         const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        document.getElementById('current-time').innerText = now.toLocaleDateString('th-TH', options).replace('เวลา', '').trim();
+        document.getElementById('current-time').innerText = now.toLocaleDateString('th-TH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace('เวลา', '').trim();
     }
 
-    // Function: Renders the High-Level Plan Section
     function renderHighLevelPlan() {
         const container = document.getElementById('high-level-plan-container');
         const plan = highLevelPlan;
-
-        // 1. Overview and Rules
-        const overviewHtml = `
-            <div class="modern-container shadow-xl mb-6 bg-blue-50 border-t-4 border-blue-600">
-                <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    แผนงานโดยรวม: ${plan.month}
-                </h3>
-                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 text-gray-700 text-sm">
-                    <div class="p-3 bg-white rounded-lg border">
-                        <p class="font-semibold text-xs text-blue-600">ทีมงาน</p>
-                        <p class="text-sm">${plan.team}</p>
-                    </div>
-                    <div class="p-3 bg-white rounded-lg border">
-                        <p class="font-semibold text-xs text-blue-600">เวลาทำงาน</p>
-                        <p class="text-sm">${plan.work_time}</p>
-                    </div>
-                    <div class="p-3 bg-white rounded-lg border">
-                        <p class="font-semibold text-xs text-blue-600">วันหยุดหลัก</p>
-                        <p class="text-sm text-red-500">${plan.day_off}</p>
-                    </div>
-                    <div class="p-3 bg-white rounded-lg border col-span-2 lg:col-span-1">
-                        <p class="font-semibold text-xs text-blue-600">Objective</p>
-                        <p class="text-sm">${plan.rules.objective}</p>
-                    </div>
-                </div>
-
-                <div class="mt-4 p-4 border border-blue-200 bg-blue-100/50 rounded-lg">
-                    <h4 class="font-bold text-base sm:text-lg text-blue-700 mb-2">📌 กฎหลักในการทำงาน</h4>
-                    <ul class="list-disc ml-5 space-y-1 text-gray-700 text-sm">
-                        <li><strong>ถ่ายงานสูงสุด:</strong> ${plan.rules.max_shoot_per_shop_per_week} ครั้งต่อร้านต่อสัปดาห์</li>
-                        <li><strong>ผลงานรายวันขั้นต่ำ:</strong> ${plan.rules.daily_output}</li>
-                        <li><strong>การโพสต์:</strong> <span class="font-extrabold text-red-600">${plan.rules.daily_post}</span> (ดูรายละเอียดการกระจายงานในตารางด้านล่าง)</li>
-                    </ul>
-                </div>
-            </div>
-        `;
-
-        // 2. Posting Rotation Table (ใช้ overflow-x-auto เพื่อให้เลื่อนดูได้บนมือถือ)
-        const rotationHtml = `
-            <div class="modern-container shadow-xl mb-6 bg-yellow-50 border-t-4 border-yellow-600">
-                <h3 class="text-xl sm:text-2xl font-bold text-yellow-800 mb-4 flex flex-col sm:flex-row sm:items-center">
-                    <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2v2m0-8V6a2 2 0 110-4 2 2 0 010 4z" />
-                        </svg>
-                        รอบการโพสต์ (Posting Rotation)
-                    </div>
-                    <span class="text-red-500 text-xs sm:text-sm ml-0 sm:ml-2 mt-1 sm:mt-0">(ทุกร้านต้องมีโพสต์ทุกวัน)</span>
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-yellow-200 text-sm">
-                        <thead>
-                            <tr class="bg-yellow-200/70">
-                                <th class="px-4 py-2 text-left font-semibold text-yellow-800 whitespace-nowrap">วัน</th>
-                                <th class="px-4 py-2 text-left font-semibold text-yellow-800 whitespace-nowrap">ร้านหลักที่เน้น</th>
-                                <th class="px-4 py-2 text-left font-semibold text-yellow-800 min-w-[300px]">รายละเอียดการกระจายคอนเทนต์</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-yellow-100">
-                            ${plan.posting_rotation.map(item => `
-                                <tr class="hover:bg-yellow-50">
-                                    <td class="px-4 py-2 whitespace-nowrap font-medium text-yellow-900">${item.day}</td>
-                                    <td class="px-4 py-2 text-gray-700 whitespace-nowrap">${item.main_shop}</td>
-                                    <td class="px-4 py-2 text-gray-700">
-                                        ${item.content.split('|').map(c => `<span class="block text-xs md:text-sm">${c.trim()}</span>`).join('')}
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        `;
-
-        // 3. Weekly Schedule (Collapsible) - UPDATED TABLE STRUCTURE
-        const weeklyScheduleHtml = `
-            <div class="modern-container shadow-xl bg-purple-50 border-t-4 border-purple-600">
-                <h3 class="text-xl sm:text-2xl font-bold text-purple-800 mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    ตารางงานรายสัปดาห์ (ภาพรวมการถ่ายทำ)
-                </h3>
-                <div class="space-y-3">
-                    ${plan.weekly_schedule.map(week => `
-                        <div class="border border-purple-200 rounded-lg overflow-hidden">
-                            <div class="collapsible-header flex justify-between items-center text-purple-800 font-semibold text-base sm:text-lg hover:bg-purple-100" 
-                                onclick="toggleCollapsible(this)">
-                                <span>สัปดาห์ที่ ${week.week}: ${week.date_range}</span>
-                                <svg class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </div>
-                            <div class="collapsible-content">
-                                <!-- ใช้ overflow-x-auto สำหรับตารางภายใน collapsible content ด้วย -->
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-purple-200 text-sm">
-                                        <thead>
-                                            <tr class="bg-purple-100">
-                                                <th class="px-3 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">วัน</th>
-                                                <th class="px-3 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">ร้าน</th>
-                                                <th class="px-3 py-2 text-left font-semibold text-purple-800 whitespace-nowrap">งานหลัก</th>
-                                                <th class="px-3 py-2 text-left font-semibold text-purple-800 min-w-[300px]">คอนเทนต์/รายละเอียดงาน</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-purple-100">
-                                            ${week.tasks.map(task => `
-                                                <tr class="hover:bg-purple-50">
-                                                    <td class="px-3 py-2 whitespace-nowrap font-medium">${task.day}</td>
-                                                    <td class="px-3 py-2 text-gray-700 whitespace-nowrap">${task.shop}</td>
-                                                    <td class="px-3 py-2 text-gray-700 whitespace-nowrap">${task.task}</td>
-                                                    <td class="px-3 py-2 text-sm text-gray-800">
-                                                        ${parseDetails(task.content_details)}
-                                                    </td>
-                                                </tr>
-                                            `).join('')}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        container.innerHTML = overviewHtml + rotationHtml + weeklyScheduleHtml;
+        container.innerHTML = `<div class="modern-container mb-6 bg-blue-50 border-t-4 border-blue-600"><h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>แผนงานโดยรวม: ${plan.month}</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 text-gray-700 text-sm"><div class="p-3 bg-white rounded-lg border"><p class="font-semibold text-xs text-blue-600">ทีมงาน</p><p class="text-sm">${plan.team}</p></div><div class="p-3 bg-white rounded-lg border"><p class="font-semibold text-xs text-blue-600">เวลาทำงาน</p><p class="text-sm">${plan.work_time}</p></div><div class="p-3 bg-white rounded-lg border"><p class="font-semibold text-xs text-blue-600">วันหยุดหลัก</p><p class="text-sm text-red-500">${plan.day_off}</p></div><div class="p-3 bg-white rounded-lg border col-span-1 sm:col-span-2 lg:col-span-1"><p class="font-semibold text-xs text-blue-600">Objective</p><p class="text-sm">${plan.rules.objective}</p></div></div><div class="mt-4 p-4 border border-blue-200 bg-blue-100/50 rounded-lg"><h4 class="font-bold text-base sm:text-lg text-blue-700 mb-2">📌 กฎหลักในการทำงาน</h4><ul class="list-disc ml-5 space-y-1 text-gray-700 text-sm"><li><strong>ถ่ายงานสูงสุด:</strong> ${plan.rules.max_shoot_per_shop_per_week} ครั้งต่อร้านต่อสัปดาห์</li><li><strong>ผลงานรายวันขั้นต่ำ:</strong> ${plan.rules.daily_output}</li><li><strong>การโพสต์:</strong> <span class="font-extrabold text-red-600">${plan.rules.daily_post}</span> (คลิกที่ปฏิทินเพื่อดูรายละเอียด)</li></ul></div></div>`;
     }
 
-    // NEW FUNCTION: Renders the Content Calendar
     function renderContentCalendar() {
         const container = document.getElementById('content-calendar-container');
         const year = 2025;
-        const month = 9; // October (0-indexed)
+        const month = 9;
+        const shootingPlanMap = new Map();
+        highLevelPlan.weekly_schedule.forEach(week => {
+            week.tasks.forEach(task => {
+                const dayMatch = task.day.match(/\d+/);
+                if (dayMatch) {
+                    const dayNumber = dayMatch[0];
+                    shootingPlanMap.set(`${year}-${String(month + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`, task);
+                }
+            });
+        });
 
-        // Find the number of days in the month
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        // Find the day of the week for the 1st of the month (0=Sunday, 1=Monday, ..., 6=Saturday)
         const firstDayOfMonth = new Date(year, month, 1).getDay();
-
         const dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์'];
+        const formattedCurrentDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
 
         let calendarHTML = `<div class="calendar-grid">`;
+        dayNames.forEach(day => { calendarHTML += `<div class="calendar-header-cell">${day}</div>`; });
+        for (let i = 0; i < firstDayOfMonth; i++) { calendarHTML += `<div class="calendar-day-cell inactive"></div>`; }
 
-        // Calendar Headers
-        dayNames.forEach(day => {
-            calendarHTML += `<div class="calendar-header-cell">${day}</div>`;
-        });
-
-        // Calculate leading blank days (offset for the first day of the month)
-        // Assuming Sunday start (firstDayOfMonth = 0 for Sunday)
-        let startingOffset = firstDayOfMonth; 
-        
-        // Add leading blank cells
-        for (let i = 0; i < startingOffset; i++) {
-            calendarHTML += `<div class="calendar-day-cell inactive"></div>`;
-        }
-
-        // --- Render Days and Content ---
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
-            const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, etc.
-            const dayName = dayNames[dayOfWeek];
-            // Date string for passing to modal function: YYYY-MM-DD
+            const dayOfWeek = date.getDay();
             const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             
-            // Find the posting rotation for this day
-            const rotationEntry = highLevelPlan.posting_rotation.find(item => item.day === dayName);
-
-            // Determine if it's a past, current, or future day
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            date.setHours(0, 0, 0, 0);
-            
-            const isToday = date.getTime() === today.getTime();
-            const isActiveDay = dayOfWeek !== 0; // Not Sunday
-
             let dayClass = 'calendar-day-cell';
-            if (isToday) {
-                dayClass += ' ring-4 ring-indigo-300/50 shadow-lg';
-            }
-            if (!isActiveDay) {
-                dayClass += ' inactive';
+            if (dayOfWeek === 0) dayClass += ' is-sunday';
+            if (dateString === formattedCurrentDate) dayClass += ' selected';
+
+            const shootingTask = shootingPlanMap.get(dateString);
+            let shootingTagHTML = '';
+            if(shootingTask && shootingTask.task !== 'หยุด') {
+                shootingTagHTML = `<span class="task-tag">🟢 ${shootingTask.task}</span>`;
             }
 
-
-            let contentTags = '';
+            const rotationEntry = highLevelPlan.posting_rotation.find(item => item.day === dayNames[dayOfWeek]);
+            let postingTagsHTML = '';
             if (rotationEntry && rotationEntry.shop_tags) {
-                contentTags = rotationEntry.shop_tags.map(tag => {
-                    const [shop, type] = tag.split(': ');
-                    let tagClass = 'tag-purple';
-                    
-                    if (shop.includes('นฏกร')) tagClass = 'tag-blue';
-                    else if (shop.includes('อิ่มสุข')) tagClass = 'tag-yellow';
-                    else if (shop.includes('ลูกเจี๊ยบ')) tagClass = 'tag-red';
-                    
-                    // Add emphasis for Main/Commitment/Post tags
-                    let tagText = shop;
-                    if (type === 'Main') {
-                        tagText = `${shop} (Main)`;
-                        tagClass += ' font-bold';
-                    } else if (type === 'Sub') {
-                         tagText = `${shop} (Sub)`;
-                    } else if (type === 'Backup') {
-                         tagClass = 'tag-purple';
-                         tagText = 'สำรอง';
-                    }
-                    
-                    // If it's a day off, show 'หยุด'
-                    if (rotationEntry.main_shop === 'คอนเทนต์สำรอง' && dayOfWeek === 0) {
-                        return `<span class="shop-tag tag-purple bg-purple-200/50 text-red-700 font-bold">วันหยุด</span>`;
-                    }
-
-                    return `<span class="shop-tag ${tagClass}">${tagText}</span>`;
-                }).join('');
+                if (dayOfWeek === 0) {
+                     postingTagsHTML = `<span class="shop-tag tag-purple">วันหยุด</span>`;
+                } else {
+                    postingTagsHTML = rotationEntry.shop_tags.map(tag => {
+                        const [shop, type] = tag.split(': ');
+                        let tagClass = 'tag-purple', tagText = shop;
+                        if (shop.includes('นฏกร')) tagClass = 'tag-blue'; else if (shop.includes('อิ่มสุข')) tagClass = 'tag-yellow'; else if (shop.includes('ลูกเจี๊ยบ')) tagClass = 'tag-red';
+                        if (type === 'Main') tagText = `${shop} (Main)`;
+                        return `<span class="shop-tag ${tagClass}">${tagText}</span>`;
+                    }).join('');
+                }
             }
             
-            if (rotationEntry && rotationEntry.main_shop === 'คอนเทนต์สำรอง' && dayOfWeek !== 0) {
-                contentTags = `<span class="shop-tag tag-purple bg-purple-200/50 text-purple-700 font-bold">สำรอง: สรุปไฮไลต์</span>`;
-            }
-
-            // ADD ONCLICK HANDLER HERE
-            calendarHTML += `
-                <div class="${dayClass} ${isActiveDay || rotationEntry.main_shop === 'คอนเทนต์สำรอง' ? 'cursor-pointer' : ''}" 
-                     onclick="openDayDetailsModal('${dateString}')">
-                    <div class="day-number">${day}</div>
-                    <div class="calendar-content">
-                        ${contentTags}
-                    </div>
-                </div>
-            `;
+            const onClickHandler = `onclick="window.handleClickOnDay('${dateString}')"`;
+            calendarHTML += `<div class="${dayClass}" ${onClickHandler}><div class="day-number">${day}</div><div class="calendar-content">${shootingTagHTML}${postingTagsHTML}</div></div>`;
         }
 
-        // Add trailing blank cells (if needed to complete the last row)
-        const totalCells = startingOffset + daysInMonth;
+        const totalCells = firstDayOfMonth + daysInMonth;
         const remainingCells = 7 - (totalCells % 7);
-        if (remainingCells !== 7) {
-            for (let i = 0; i < remainingCells; i++) {
-                calendarHTML += `<div class="calendar-day-cell inactive"></div>`;
-            }
-        }
-
-        calendarHTML += `</div>`;
-        container.innerHTML = calendarHTML;
+        if (remainingCells !== 7) { for (let i = 0; i < remainingCells; i++) { calendarHTML += `<div class="calendar-day-cell inactive"></div>`; } }
+        
+        container.innerHTML = calendarHTML + `</div>`;
     }
 
-    // Global function to close the modal
-    window.closeModal = function() {
-        document.getElementById('calendar-modal').classList.add('hidden');
-        document.getElementById('calendar-modal').classList.remove('flex');
-    }
-
-    // Global function to open and populate the modal
-    window.openDayDetailsModal = function(dateString) {
-        const modal = document.getElementById('calendar-modal');
-        const titleElement = document.getElementById('modal-title');
-        const contentElement = document.getElementById('modal-content');
-
-        // 1. Parse Date and get Day Name
+    window.handleClickOnDay = function(dateString) {
         const [year, month, day] = dateString.split('-').map(Number);
-        // month is 1-indexed from the string, convert to 0-indexed for Date constructor
-        const dateObj = new Date(year, month - 1, day); 
-        const dateLocale = dateObj.toLocaleDateString('th-TH', { dateStyle: 'full' });
-        const dayOfWeek = dateObj.getDay(); // 0=Sunday, 1=Monday, etc.
-        const dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์'];
-        const dayName = dayNames[dayOfWeek];
-
-        // Format Title: Use only the date part of dateLocale
-        const datePart = dateLocale.substring(dateLocale.indexOf(' ') + 1); // e.g., "8 ตุลาคม พ.ศ. 2568"
-        titleElement.innerHTML = `📅 รายละเอียดงาน: ${dayName} ที่ ${dayPart}`;
-        contentElement.innerHTML = '<div class="text-center text-gray-500">กำลังโหลดข้อมูล...</div>'; 
-
-        // 2. Get Daily Tasks (Specific Tasks)
-        const dailySchedule = scheduleData.find(entry => entry.date === dateString);
-        let tasksHtml = '';
-        if (dailySchedule && dailySchedule.tasks.length > 0 && dailySchedule.tasks.some(t => t.title !== 'วันหยุด')) {
-            tasksHtml = `
-                <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                        งานประจำวันที่ต้องทำ (Daily Schedule)
-                    </h4>
-                    <ul class="space-y-2 text-sm">
-                        ${dailySchedule.tasks.map(task => {
-                            const statusColor = task.status === 'completed' ? 'text-green-600' : 'text-yellow-600';
-                            const statusIcon = task.status === 'completed' ? '✅' : '⏳';
-                            return `
-                                <li class="p-2 border-b border-blue-100 last:border-b-0 flex justify-between items-center hover:bg-blue-100/50 rounded-md">
-                                    <div>
-                                        <span class="font-medium text-gray-800">${task.time}</span> - <span class="text-gray-700">${task.title}</span>
-                                    </div>
-                                    <span class="text-xs font-semibold whitespace-nowrap ${statusColor}">${task.shop} ${statusIcon}</span>
-                                </li>
-                            `;
-                        }).join('')}
-                    </ul>
-                </div>
-            `;
-        } else if (dailySchedule && dailySchedule.tasks.some(t => t.title === 'วันหยุด')) {
-             tasksHtml = `<div class="p-3 text-center text-red-600 bg-red-50 rounded-lg border border-red-200 font-bold">🎉 วันหยุดทำการ 🎉</div>`;
-        } else {
-            tasksHtml = `<div class="p-3 text-center text-gray-500 bg-gray-50 rounded-lg">วันนี้ไม่มีงานถ่ายทำหรือตัดต่อเฉพาะกิจ</div>`;
-        }
-        
-        // 3. Get Posting Rotation (Daily Content Plan)
-        const rotationEntry = highLevelPlan.posting_rotation.find(item => item.day === dayName);
-        let rotationHtml = '';
-        if (rotationEntry) {
-            rotationHtml = `
-                <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <h4 class="font-bold text-yellow-700 mb-2 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2v2m0-8V6a2 2 0 110-4 2 2 0 010 4z"></path></svg>
-                        แผนการโพสต์ประจำวัน (Rotation)
-                    </h4>
-                    <p class="text-sm mb-2"><strong>ร้านหลักที่เน้น:</strong> <span class="font-semibold text-yellow-800">${rotationEntry.main_shop}</span></p>
-                    <ul class="list-disc ml-5 text-sm space-y-1 text-gray-700">
-                        ${rotationEntry.content.split('|').map(c => `<li>${c.trim()}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
-        }
-        
-        // 4. Issues/Notes
-        let issuesHtml = '';
-        if (dailySchedule && dailySchedule.issues.length > 0) {
-             issuesHtml = `
-                <div class="p-3 bg-red-50 rounded-lg border border-red-200">
-                    <h4 class="font-bold text-red-700 mb-2 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        ประเด็นปัญหา (หากมี)
-                    </h4>
-                    <ul class="list-decimal ml-5 text-sm space-y-1 text-red-800">
-                        ${dailySchedule.issues.map(issue => `<li>${issue}</li>`).join('')}
-                    </ul>
-                </div>
-             `;
-        }
-
-
-        contentElement.innerHTML = tasksHtml + rotationHtml + issuesHtml;
-        
-        // 5. Display Modal
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-
-
-    // Function: Toggle Collapsible Content for Weekly Schedule
-    window.toggleCollapsible = function(header) {
-        const content = header.nextElementSibling;
-        const icon = header.querySelector('svg');
-
-        // Check if content is currently active
-        const isActive = content.classList.contains('active');
-        
-        // Close all other active collapsible items (optional, but cleaner)
-        document.querySelectorAll('.collapsible-content.active').forEach(item => {
-            if (item !== content) {
-                item.classList.remove('active');
-                item.previousElementSibling.querySelector('svg').classList.remove('rotate-180');
-                item.style.maxHeight = null;
-            }
-        });
-
-        // Toggle the clicked item
-        if (!isActive) {
-            content.classList.add('active');
-            icon.classList.add('rotate-180');
-            // Set max-height dynamically (important for transition to work correctly when content size is unknown)
-            content.style.maxHeight = content.scrollHeight + "px"; 
-        } else {
-            content.classList.remove('active');
-            icon.classList.remove('rotate-180');
-            content.style.maxHeight = null; // Important: reset max-height when closing
-        }
+        updateDate(new Date(year, month - 1, day));
+        openDayDetailsModal(dateString);
     }
     
-    // Function: Renders the shop filter buttons
-    function renderShopFilters() {
-        const shops = highLevelPlan.shops;
-        const filterContainer = document.getElementById('shop-filter-container');
-        
-        const allButton = `<button onclick="setFilter('All')" class="filter-button px-3 py-1.5 text-sm rounded-full font-medium transition duration-300 bg-gray-200 text-gray-700 active whitespace-nowrap">ทั้งหมด</button>`;
-        
-        const shopButtons = shops.map(shop => 
-            `<button onclick="setFilter('${shop}')" class="filter-button px-3 py-1.5 text-sm rounded-full font-medium transition duration-300 bg-gray-200 text-gray-700 whitespace-nowrap">${shop}</button>`
-        ).join('');
-
-        filterContainer.innerHTML = allButton + shopButtons;
-    }
-
-    // Function: Set the shop filter
-    window.setFilter = function(filter) {
-        currentFilter = filter;
-        document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
-        // Find and activate the clicked button
-        const buttons = document.querySelectorAll('.filter-button');
-        buttons.forEach(btn => {
-            // Adjust comparison for the 'All' button text
-            const buttonText = btn.innerText.trim();
-            if (filter === 'All' && buttonText === 'ทั้งหมด') {
-                btn.classList.add('active');
-            } else if (filter !== 'All' && buttonText.includes(filter.split(' ')[0])) { // Check for partial match like "นฏกร"
-                btn.classList.add('active');
-            }
-        });
-        
-        renderTodaySchedule(currentDate);
-        renderPerformance();
-    }
-
-    // Function: Renders today's schedule based on the selected date and filter
-    function renderTodaySchedule(date) {
-        const container = document.getElementById('today-schedule-container');
-        const titleElement = document.getElementById('today-title');
-        
-        const formattedDate = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-        
-        // Find the schedule for the selected date
-        const todayEntry = scheduleData.find(entry => entry.date === formattedDate);
-
-        if (!todayEntry) {
-            titleElement.innerText = `งานวันนี้ (${date.toLocaleDateString('th-TH', { dateStyle: 'long' })}): ไม่มีข้อมูลกำหนดการ`;
-            container.innerHTML = `<div class="p-6 text-center text-gray-500 font-kanit">ไม่มีการกำหนดตารางงานสำหรับวันนี้</div>`;
-            return;
-        }
-
-        titleElement.innerText = `งานวันนี้ (${todayEntry.day}):`;
-
-        // Apply filter
-        const filterKeyword = currentFilter === 'All' ? '' : currentFilter.split(' ')[0]; // Use first word for shop name
-        const filteredTasks = todayEntry.tasks.filter(task => 
-            currentFilter === 'All' || task.shop.includes(filterKeyword) || task.shop === '-'
-        );
-
-        if (filteredTasks.length === 0) {
-            container.innerHTML = `<div class="p-6 text-center text-gray-500 font-kanit">ไม่มีงานสำหรับ "${currentFilter}" ในวันนี้</div>`;
-            return;
-        }
-        
-        const tasksHtml = filteredTasks.map(task => {
-            const statusColor = task.status === 'completed' ? 'bg-green-100 text-green-700 border-green-300' : 
-                                task.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' : 
-                                'bg-red-100 text-red-700 border-red-300';
-            const statusText = task.status === 'completed' ? '✅ เสร็จ' : 
-                               task.status === 'pending' ? '⏳ รอดำเนินการ' : 
-                               '❌ ล่าช้า';
-            
-            return `
-                <div class="task-list-item-mobile p-4 border-l-4 ${statusColor} rounded-lg shadow-sm">
-                    <!-- Grid Area: time -->
-                    <div class="font-semibold text-base md:text-lg text-gray-900 grid-area-[time] self-center">
-                        ${task.time}
-                    </div>
-                    
-                    <!-- Grid Area: status (moved to top right on mobile) -->
-                    <div class="text-right grid-area-[status] self-center">
-                        <span class="inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${statusColor.replace('border-', 'border-').replace('-100', '-600').replace('-700', '-800')}">
-                            ${statusText}
-                        </span>
-                    </div>
-
-                    <!-- Grid Area: shop (moved to middle on mobile) -->
-                    <div class="text-sm text-gray-500 grid-area-[shop] self-center truncate text-left md:text-center ml-2 mr-2">
-                        ${task.shop}
-                    </div>
-
-                    <!-- Grid Area: title (full width on mobile) -->
-                    <div class="text-gray-800 mt-2 pt-2 border-t border-gray-200 grid-area-[title] col-span-3">
-                        <p class="font-medium text-base">${task.title}</p>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Fallback for larger screens (sm: or md:) where we revert to flex
-        // Note: Tailwind utility classes in HTML handle the sm:w-1/5, sm:w-3/5 automatically
-        // but we need the custom CSS grid for smaller screens for better layout
-        
-        container.innerHTML = `<div class="space-y-3">${tasksHtml}</div>`;
-    }
-
-    // Function: Renders the performance summary cards
-    function renderPerformance() {
-        const container = document.getElementById('performance-container');
-        container.innerHTML = '';
-        
-        const today = new Date();
-        // Set today to the start of the day for accurate comparison
-        today.setHours(0, 0, 0, 0); 
-        
-        let totalFinished = 0;
-        let totalTasks = 0;
-        let totalDays = 0;
-        
-        // Sort data descending by date to show newest first
-        const sortedData = [...scheduleData].sort((a, b) => new Date(b.date) - new Date(a.date));
-        
-        const filterKeyword = currentFilter === 'All' ? '' : currentFilter.split(' ')[0]; // Use first word for shop name
-
-        sortedData.forEach(entry => {
-            const entryDate = new Date(entry.date);
-            entryDate.setHours(0, 0, 0, 0);
-
-            // Only show performance for dates *before* today and only if they are not 'วันหยุด'
-            const isDayOff = entry.tasks.some(task => task.title === "วันหยุด");
-            
-            if (entryDate < today && !isDayOff) {
-                
-                // Filter tasks based on selected shop
-                const tasksForPerformance = entry.tasks.filter(task => 
-                    currentFilter === 'All' || task.shop.includes(filterKeyword)
-                );
-                
-                if (tasksForPerformance.length === 0) {
-                    // Skip day if no tasks matched the current filter
-                    return; 
-                }
-
-                totalDays++;
-                
-                const finishedTasks = tasksForPerformance.filter(task => task.status === 'completed').length;
-                const pendingTasks = tasksForPerformance.filter(task => task.status === 'pending' || task.status === 'late').length;
-                
-                totalFinished += finishedTasks;
-                totalTasks += tasksForPerformance.length;
-                
-                const status = (pendingTasks > 0 || entry.issues.length > 0) ? 'issue' : (finishedTasks === tasksForPerformance.length) ? 'completed' : 'issue';
-                
-                const cardColor = status === 'completed' ? 'bg-white border-l-4 border-green-500 shadow-md' : 'bg-white border-l-4 border-red-500 shadow-md';
-                const statusColor = status === 'completed' ? 'text-green-600' : 'text-red-600';
-                const statusIcon = status === 'completed' ? '✅' : '⚠️';
-                const issueColor = entry.issues.length > 0 ? 'text-red-600' : 'text-gray-600';
-
-                container.innerHTML += `
-                    <div class="p-4 rounded-xl ${cardColor}">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 border-b pb-2">
-                            <h4 class="text-lg sm:text-xl font-bold text-gray-800">${entry.day} (${currentFilter === 'All' ? 'ทั้งหมด' : currentFilter})</h4>
-                            <span class="text-sm font-semibold ${statusColor} flex items-center mt-1 sm:mt-0">
-                                ${statusIcon} ${finishedTasks}/${tasksForPerformance.length} งานเสร็จ
-                            </span>
-                        </div>
-                        <ul class="list-disc pl-5 text-sm text-gray-800 mb-2">
-                            ${tasksForPerformance.map(task => 
-                                `<li class="${task.status === 'completed' ? 'text-gray-500 line-through' : ''}">
-                                    ${task.time} - ${task.title} (${task.shop}) 
-                                    ${task.status === 'completed' ? '✅' : task.status === 'pending' ? '⏳' : '❌'}
-                                </li>`
-                            ).join('')}
-                        </ul>
-                        <div class="mt-2 font-kanit text-sm ${issueColor}">
-                            <span class="font-semibold">หมายเหตุ:</span>
-                            ${entry.issues.length === 0 ? `<span>ไม่มีปัญหา</span>` : `
-                                <ul class="list-decimal pl-6 mt-1">
-                                    ${entry.issues.map(issue => `<li>${issue}</li>`).join('')}
-                                </ul>
-                            `}
-                        </div>
-                    </div>
-                `;
-            }
-        });
-
-        // สรุปภาพรวมด้านบน
-        if (totalDays > 0) {
-            const percent = Math.round((totalFinished / totalTasks) * 100);
-            container.innerHTML = `
-                <div class="mb-6 p-4 rounded-xl bg-green-200 text-green-900 font-kanit text-sm sm:text-lg font-semibold flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                    <div>จำนวนวันที่ผ่านมา (ตาม Filter): ${totalDays} วัน</div>
-                    <div>งานที่เสร็จ: ${totalFinished} / ${totalTasks} (${percent}%)</div>
-                </div>
-            ` + container.innerHTML;
-        } else {
-            container.innerHTML = `
-                <div class="p-6 text-center text-gray-500 font-kanit">ยังไม่มีผลการดำเนินงานในช่วงเวลานี้</div>
-            `;
-        }
-    }
-
-    // Function: Initializes the date selector and sets up listeners
-    function setupDateSelector() {
-        const dateSelector = document.getElementById('date-selector');
-        
-        // Set the initial date to the current date (formatted YYYY-MM-DD)
+    function updateDate(newDateObject) {
+        currentDate = newDateObject;
         const year = currentDate.getFullYear();
         const month = String(currentDate.getMonth() + 1).padStart(2, '0');
         const day = String(currentDate.getDate()).padStart(2, '0');
-        const todayString = `${year}-${month}-${day}`;
-        dateSelector.value = todayString;
+        document.getElementById('date-selector').value = `${year}-${month}-${day}`;
+        renderTodaySchedule();
+        renderContentCalendar();
+    }
 
+    window.closeModal = function() {
+        document.getElementById('calendar-modal').classList.add('hidden');
+    }
+
+    function openDayDetailsModal(dateString) {
+        const modal = document.getElementById('calendar-modal');
+        const [year, month, day] = dateString.split('-').map(Number);
+        const dateObj = new Date(year, month - 1, day); 
+        const dayName = dateObj.toLocaleDateString('th-TH', { weekday: 'long' });
+        const datePart = dateObj.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+        
+        document.getElementById('modal-title').innerHTML = `📅 รายละเอียด: ${dayName} ที่ ${datePart}`;
+        
+        const dailySchedule = scheduleData.find(entry => entry.date === dateString);
+        let tasksHtml = `<div class="p-3 text-center text-gray-500 bg-gray-50 rounded-lg">ไม่มีงานถ่ายทำหรือตัดต่อเฉพาะกิจ</div>`;
+        if (dailySchedule && dailySchedule.tasks.length > 0) {
+            if (dailySchedule.tasks.some(t => t.title === 'วันหยุด')) {
+                tasksHtml = `<div class="p-3 text-center text-red-600 bg-red-50 rounded-lg border border-red-200 font-bold">🎉 วันหยุดทำการ 🎉</div>`;
+            } else {
+                tasksHtml = `<div class="p-3 bg-blue-50 rounded-lg border border-blue-200"><h4 class="font-bold text-blue-700 mb-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>งานประจำวัน</h4><ul class="space-y-2 text-sm">${dailySchedule.tasks.map(task => `<li class="p-2 border-b flex justify-between items-center"><div><span class="font-medium">${task.time}</span> - <span>${task.title}</span></div><span class="text-xs font-semibold whitespace-nowrap ${task.status === 'completed' ? 'text-green-600' : 'text-yellow-600'}">${task.shop} ${task.status === 'completed' ? '✅' : '⏳'}</span></li>`).join('')}</ul></div>`;
+            }
+        }
+        
+        const rotationEntry = highLevelPlan.posting_rotation.find(item => item.day === dayName);
+        let rotationHtml = '';
+        if (rotationEntry) {
+            rotationHtml = `<div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200"><h4 class="font-bold text-yellow-700 mb-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2v2m0-8V6a2 2 0 110-4 2 2 0 010 4z"></path></svg>แผนการโพสต์</h4><p class="text-sm mb-2"><strong>ร้านหลัก:</strong> <span class="font-semibold text-yellow-800">${rotationEntry.main_shop}</span></p><ul class="list-disc ml-5 text-sm space-y-1 text-gray-700">${rotationEntry.content.split('|').map(c => `<li>${c.trim()}</li>`).join('')}</ul></div>`;
+        }
+        
+        let issuesHtml = '';
+        if (dailySchedule && dailySchedule.issues.length > 0) {
+             issuesHtml = `<div class="p-3 bg-red-50 rounded-lg border border-red-200"><h4 class="font-bold text-red-700 mb-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>ประเด็นปัญหา</h4><ul class="list-decimal ml-5 text-sm space-y-1 text-red-800">${dailySchedule.issues.map(issue => `<li>${issue}</li>`).join('')}</ul></div>`;
+        }
+        
+        document.getElementById('modal-content').innerHTML = tasksHtml + rotationHtml + issuesHtml;
+        modal.classList.remove('hidden');
+    }
+
+    function renderShopFilters() {
+        const shops = highLevelPlan.shops;
+        const filterContainer = document.getElementById('shop-filter-container').querySelector('.flex');
+        const allButton = `<button onclick="setFilter('All')" class="filter-button px-3 py-1.5 text-sm rounded-full font-medium transition duration-300 bg-gray-200 text-gray-700 active whitespace-nowrap">ทั้งหมด</button>`;
+        const shopButtons = shops.map(shop => `<button onclick="setFilter('${shop}')" class="filter-button px-3 py-1.5 text-sm rounded-full font-medium transition duration-300 bg-gray-200 text-gray-700 whitespace-nowrap">${shop}</button>`).join('');
+        filterContainer.innerHTML = allButton + shopButtons;
+    }
+
+    window.setFilter = function(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-button').forEach(btn => {
+            const buttonText = btn.innerText.trim();
+            const isActive = (filter === 'All' && buttonText === 'ทั้งหมด') || (filter !== 'All' && buttonText.includes(filter.split(' ')[0]));
+            btn.classList.toggle('active', isActive);
+        });
+        renderTodaySchedule();
+        renderPerformance();
+    }
+
+    function renderTodaySchedule() {
+        const container = document.getElementById('today-schedule-container');
+        const titleElement = document.getElementById('today-title');
+        const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+        const todayEntry = scheduleData.find(entry => entry.date === formattedDate);
+
+        if (!todayEntry) {
+            titleElement.innerText = `งานวันที่ ${currentDate.toLocaleDateString('th-TH', { dateStyle: 'long' })}`;
+            container.innerHTML = `<div class="p-6 text-center text-gray-500">ไม่มีการกำหนดตารางงานสำหรับวันนี้</div>`;
+            return;
+        }
+        titleElement.innerText = `งานวันนี้ (${todayEntry.day}):`;
+        const filterKeyword = currentFilter === 'All' ? '' : currentFilter.split(' ')[0];
+        const filteredTasks = todayEntry.tasks.filter(task => currentFilter === 'All' || task.shop.includes(filterKeyword) || task.shop === '-');
+        
+        if (filteredTasks.length === 0) {
+            container.innerHTML = `<div class="p-6 text-center text-gray-500">ไม่มีงานสำหรับ "${currentFilter}" ในวันนี้</div>`;
+            return;
+        }
+        const tasksHtml = filteredTasks.map(task => {
+            const isCompleted = task.status === 'completed';
+            const statusColor = isCompleted ? 'border-green-400 bg-green-50 text-green-700' : 'border-yellow-400 bg-yellow-50 text-yellow-700';
+            const statusText = isCompleted ? '✅ เสร็จ' : '⏳ รอดำเนินการ';
+            return `<div class="task-list-item-mobile p-3 border-l-4 ${statusColor} rounded-md shadow-sm"><div class="font-semibold text-base md:text-lg text-gray-900" style="grid-area: time;">${task.time}</div><div class="text-xs font-semibold whitespace-nowrap text-right" style="grid-area: status;"><span class="inline-block px-2 py-0.5 rounded-full ${statusColor}">${statusText}</span></div><div class="text-sm text-gray-600 truncate" style="grid-area: shop;">${task.shop}</div><div class="text-gray-800 mt-2 pt-2 border-t col-span-3" style="grid-area: title;"><p class="font-medium text-base">${task.title}</p></div></div>`;
+        }).join('');
+        container.innerHTML = `<div class="space-y-3">${tasksHtml}</div>`;
+    }
+
+    function renderPerformance() {
+        const container = document.getElementById('performance-container');
+        container.innerHTML = '';
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        let totalFinished = 0, totalTasks = 0, totalDays = 0;
+        
+        const sortedData = [...scheduleData].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const filterKeyword = currentFilter === 'All' ? '' : currentFilter.split(' ')[0];
+        
+        sortedData.forEach(entry => {
+            const entryDate = new Date(entry.date); entryDate.setHours(0, 0, 0, 0);
+            if (entryDate < today && !entry.tasks.some(t => t.title === "วันหยุด")) {
+                const tasksForPerformance = entry.tasks.filter(task => currentFilter === 'All' || task.shop.includes(filterKeyword));
+                if (tasksForPerformance.length === 0) return;
+                
+                totalDays++;
+                const finishedTasks = tasksForPerformance.filter(task => task.status === 'completed').length;
+                totalFinished += finishedTasks;
+                totalTasks += tasksForPerformance.length;
+                
+                const hasIssues = tasksForPerformance.some(t => t.status !== 'completed') || entry.issues.length > 0;
+                const cardColor = hasIssues ? 'border-red-500' : 'border-green-500';
+                const statusIcon = hasIssues ? '⚠️' : '✅';
+                
+                container.innerHTML += `<div class="modern-container border-l-4 ${cardColor}"><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 border-b pb-2"><h4 class="text-lg font-bold">${entry.day} (${currentFilter === 'All' ? 'ทั้งหมด' : currentFilter})</h4><span class="text-sm font-semibold flex items-center mt-1 sm:mt-0 ${hasIssues ? 'text-red-600' : 'text-green-600'}">${statusIcon} ${finishedTasks}/${tasksForPerformance.length} งานเสร็จ</span></div><ul class="list-disc pl-5 text-sm mb-2">${tasksForPerformance.map(task => `<li class="${task.status === 'completed' ? 'text-gray-500 line-through' : ''}">${task.time} - ${task.title} (${task.shop})</li>`).join('')}</ul>${entry.issues.length > 0 ? `<div class="mt-2 text-sm text-red-600"><span class="font-semibold">หมายเหตุ:</span><ul class="list-decimal pl-6 mt-1">${entry.issues.map(issue => `<li>${issue}</li>`).join('')}</ul></div>` : ''}</div>`;
+            }
+        });
+        
+        if (totalDays > 0) {
+            const percent = totalTasks > 0 ? Math.round((totalFinished / totalTasks) * 100) : 0;
+            container.innerHTML = `<div class="mb-6 p-4 rounded-xl bg-blue-100 text-blue-800 text-sm sm:text-lg font-semibold flex flex-col sm:flex-row justify-between gap-2"><span>ภาพรวม ${totalDays} วันที่ผ่านมา (ตาม Filter):</span><span>สำเร็จ ${totalFinished} / ${totalTasks} งาน (${percent}%)</span></div>` + container.innerHTML;
+        } else {
+            container.innerHTML = `<div class="p-6 text-center text-gray-500">ยังไม่มีผลการดำเนินงานในช่วงเวลานี้</div>`;
+        }
+    }
+
+    function setupDateSelector() {
+        const dateSelector = document.getElementById('date-selector');
         dateSelector.addEventListener('change', (event) => {
-            const newDate = new Date(event.target.value);
-            // Fix timezone issue when selecting date from input
-            newDate.setDate(newDate.getDate() + 1); 
-            currentDate = newDate;
-            renderTodaySchedule(currentDate);
+            const [year, month, day] = event.target.value.split('-').map(Number);
+            updateDate(new Date(year, month - 1, day));
         });
     }
 
-    // Main initialization function
+    // New function to handle collapsible sections
+    window.toggleCollapsible = function(header) {
+        const content = header.nextElementSibling;
+        header.classList.toggle('active');
+        content.classList.toggle('active');
+    }
+
     window.onload = function () {
-        // 1. Initial time update and interval
         updateTime();
         setInterval(updateTime, 1000);
-
-        // 2. Setup date picker
         setupDateSelector();
-
-        // 3. Render High-Level Plan (New Section)
         renderHighLevelPlan();
-
-        // 4. Render filters
         renderShopFilters();
-        
-        // 5. Initial rendering
-        renderTodaySchedule(currentDate);
+        updateDate(currentDate); // Initial call to render everything
         renderPerformance();
-
-        // 6. Render Content Calendar
-        renderContentCalendar();
     }
 </script>
 </body>
 </html>
+
